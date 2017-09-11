@@ -25,10 +25,10 @@
               <td><div contenteditable>{{ product.name }}</div></td>
               {% for price in prices %}
                 {% if product.id == price.prod_id %}
-                  <td><div contenteditable>${{ price.price }}</div></td>
+                  <td><div contenteditable>$ {{ price.price }}</div></td>
                 {% endif %}
               {% endfor %}
-              <td><div contenteditable>{{ ticker.esc }}%</div></td>
+              <td><div contenteditable>{{ ticker.op_cost_esc }} %</div></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -45,11 +45,11 @@
         <tbody>
           <tr id="proved_discount_factor">
             <td>Proved</td>
-            <td><div contenteditable>{{ ticker.disc_factor }}%</div></td>
+            <td><div contenteditable>{{ ticker.disc_factor }} %</div></td>
           </tr>
           <tr id="probable_discount_factor">
             <td>Probable</td>
-            <td><div contenteditable>{{ ticker.disc_factor }}%</div></td>
+            <td><div contenteditable>{{ ticker.disc_factor }} %</div></td>
           </tr>
         </tbody>
       </table>
@@ -140,15 +140,15 @@
       <div class="col-sm-3 col-sm-offset-1">
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Decline Rate Oil</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="12.4 %">
+          <input type="text" class="form-control decline-rate" placeholder="%" value="12.4 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Decline Rate NGL</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="10.8 %">
+          <input type="text" class="form-control decline-rate" placeholder="%" value="10.8 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Decline Rate Gas</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="9.0 %">
+          <input type="text" class="form-control decline-rate" placeholder="%" value="9.0 %" disabled>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@
         <div class="x_content">
           <div class="col-sm-4">
             <div class="col-sm-4">
-              <input type="text" class="form-control date-range" placeholder="start year">
+              <input type="text" class="form-control date-range" placeholder="2017">
             </div>
             <div class="col-sm-4">
               <input type="text" class="form-control date-range" placeholder="end year">
