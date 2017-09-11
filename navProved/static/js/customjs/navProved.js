@@ -69,7 +69,7 @@ let NavProved = (() => {
 		})
 
 		window.navProvedTable = $('#datatable').DataTable({
-			"scrollY": 300,
+			"scrollY": 400,
 			"scrollX": true,
 			"fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
 				let api = this.api()
