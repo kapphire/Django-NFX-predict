@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 from .models import Product, Ticker, Price, Predict, DeclineRate
-from common.formulas import *
+from .common.formulas import NavProved
 
 
 # Create your views here.
