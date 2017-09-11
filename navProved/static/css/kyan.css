@@ -1,0 +1,21 @@
+.input-group {
+	table-layout: fixed;
+}
+
+.input-group label {
+	width: 70%;
+}
+
+table td {
+	text-align: center;
+}
+table th {
+	text-align: center;
+}
+
+[contenteditable]:empty:before{
+  content: attr(placeholder);
+  display: block;
+  color: #afafac;
+  cursor: text;
+}

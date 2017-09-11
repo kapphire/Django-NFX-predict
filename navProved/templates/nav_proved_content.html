@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <!-- top tiles -->
+  <div class="docs-data" class="col-sm-12">
+    <div class="col-sm-4 col-md-4 col-lg-4">
+      <table class="table x_content">
+        <thead>
+          <tr>
+            <th></th>
+            <th>2017</th>
+            <th>2018</th>
+            <th>2019</th>
+            <th>2020</th>
+            <th>2021</th>
+            <th>Escalation</th>
+          </tr>
+        </thead>
+        <tbody id="price">
+          {% for product in products %}
+            <tr>
+              <td><div contenteditable>{{ product.name }}</div></td>
+              {% for price in prices %}
+                {% if product.id == price.prod_id %}
+                  <td><div contenteditable>${{ price.price }}</div></td>
+                {% endif %}
+              {% endfor %}
+              <td><div contenteditable>{{ ticker.esc }}%</div></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-2 col-sm-offset-1 col-md-2 col-lg-2">
+      <table class="table x_content">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Discount Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="proved_discount_factor">
+            <td>Proved</td>
+            <td><div contenteditable>{{ ticker.disc_factor }}%</div></td>
+          </tr>
+          <tr id="probable_discount_factor">
+            <td>Probable</td>
+            <td><div contenteditable>{{ ticker.disc_factor }}%</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-2 col-sm-offset-1 col-md-2 col-lg-2">
+      <table class="table x_content">
+        <thead>
+          <tr>
+            <th>Results</th>
+          </tr>
+        <tbody>
+          <tr>
+            <td>PV ($MM)</td>
+            <td><div contenteditable id="pv">$</div></td>
+          </tr>
+          <tr>
+            <td>$/boe</td>
+            <td><div contenteditable id="pv_1">$</div></td>
+          </tr>
+          <tr>
+            <td>$/Mcfe</td>
+            <td><div contenteditable id="pv_2">$</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="col-sm-2">
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Baseline Oil Price</label>
+          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 55">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Baseline Gas Price</label>
+          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 3.35">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Oil Differential</label>
+          <input type="text" class="form-control variable-set-dollar" value="-5.38">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Gas Differential</label>
+          <input type="text" class="form-control variable-set-dollar" value="-0.4">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">NGL % of WTI</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="30 %">
+        </div>
+      </div>   
+      <div class="col-sm-2 col-sm-offset-1">
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Prod. Taxes</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="3.7 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Tax Rate</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.5 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">% Deferred</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="86.2 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Op. Cost Escalation</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.0 %">
+        </div>
+      </div>
+      <div class="col-sm-2 col-sm-offset-1">
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">D, D & A ($/Mcfe)</label>
+          <input type="text" class="form-control variable-set-dollar" value="2.53">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Disc. Factor</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="10 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">% Def after 5 yrs</label>
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="50 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Dev Life</label>
+          <input type="text" class="form-control variable-set-dollar" value="5.00">
+        </div>
+      </div>
+      <div class="col-sm-3 col-sm-offset-1">
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Decline Rate Oil</label>
+          <input type="text" class="form-control decline-rate" placeholder="%" value="12.4 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Decline Rate NGL</label>
+          <input type="text" class="form-control decline-rate" placeholder="%" value="10.8 %">
+        </div>
+        <div class="input-group input-group-sm">
+          <label class="input-group-addon">Decline Rate Gas</label>
+          <input type="text" class="form-control decline-rate" placeholder="%" value="9.0 %">
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_content">
+        <div class="x_content">
+          <div class="col-sm-4">
+            <div class="col-sm-4">
+              <input type="text" class="form-control date-range" placeholder="start year">
+            </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control date-range" placeholder="end year">
+            </div>
+            <div class="col-sm-4">
+              <button class="btn btn-success" id="sendAjaxData">Go</button>
+              {% csrf_token %}
+            </div>
+          </div>
+        </div>
+        <div class="x_content">
+          <table class="table table-striped table-bordered" cellspacing="0" width="100%" id="datatable">
+            <thead>              
+              <tr>
+                <td rowspan="3"></td>
+                <th colspan="3" scope="colgroup"></th>
+                <th colspan="4" scope="colgroup">Production</th>
+                <th colspan="4">Net</th>
+                <th scope="col">Prodn.</th>
+                <th scope="col"></th>
+                <th scope="col">Less</th>
+                <th scope="col"></th>
+                <th scope="col">Tax</th>
+                <th colspan="3" scope="colgroup"></th>
+              </tr>
+              <tr>
+                {% for product in products %}
+                  <th scope="col">{{ product.name }}</th>
+                {% endfor  %}
+                {% for product in products %}
+                  <th scope="col">{{ product.name }}</th>
+                {% endfor  %}
+                <th scope="col">Total</th>
+                <th scope="col">Revenues</th>
+                <th scope="col">Capex</th>
+                <th colspan="2" scope="colgroup">Operating Costs</th>
+                <th scope="col">Taxes</th>
+                <th scope="col">CFO</th>
+                <th scope="col">DD&A</th>
+                <th scope="col">Operating income</th>
+                <th scope="col">(Net of Deferred)</th>
+                <th scope="col">FCF</th>
+                <th scope="col">Discount</th>
+                <th scope="col">PV</th>
+              </tr>
+              <tr>
+                <th scope="row">($/bbl)</th>
+                <td>($/bbl)</td>
+                <td>($/Mcf)</td>
+                <td>(MMbbls)</td>
+                <td>(MMbbls)</td>
+                <td>(Bcf)</td>
+                <td>(Bcfe)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($/Mcfe)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>($MM)</td>
+                <td>Factor</td>
+                <td>($MM)</td>
+              </tr>
+            </thead>
+            <tfoot>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- /page content -->
+
+<!-- footer content -->
+</div>
+{% endblock %}
