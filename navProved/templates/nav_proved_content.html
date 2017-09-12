@@ -147,7 +147,7 @@
       </div>
       <div class="col-sm-2 col-sm-offset-2">
         {% for decline_rate in decline_rates %}
-          <div class="input-group input-group-sm">
+          <div class="input-group input-group-sm decline-rate-css">
             <label class="input-group-addon">Decline Rate {{ decline_rate.prod.name }}</label>
             <input type="text" class="form-control decline-rate" placeholder="%" data-prod-id="{{ decline_rate.prod_id }}" disabled>
           </div>

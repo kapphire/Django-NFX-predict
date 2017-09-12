@@ -10,6 +10,10 @@
 	width: 55%;
 }
 
+.input-group.decline-rate-css label {
+	width: 63%;
+}
+
 table td {
 	text-align: center;
 }
