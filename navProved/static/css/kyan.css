@@ -6,6 +6,10 @@
 	width: 70%;
 }
 
+.input-group.small label {
+	width: 55%;
+}
+
 table td {
 	text-align: center;
 }

@@ -6,15 +6,21 @@ class NavProved(object):
 	def __init__(self, rawData, param):
 		self.start = int(rawData[0])
 		self.end = int(rawData[1])
+		self.predicts = param['predicts']
+		self.sum_param = param['sum_param']
+		self.years = param['years']
+		self.prices = param['prices']
+		self.delta = 0.00005
+		self.early_stage_value = param['early_stage_value']
 
-		self.preprocess_prices(param['years'], param['prices'])
-		self.predict_params(param['predicts'], param['decline_rates'])
-		self.initialize_prices(param['sum_param'])
+		# self.preprocess_prices(param['years'], param['prices'])
+		# self.predict_params(param['predicts'], param['decline_rates'])
+		# self.initialize_prices(param['sum_param'])
 
 	def predict_params(self, predicts, decline_rates):
 		prod_diff = {}
 		prod_esc = {}
-		decline_rate = {}
+		# decline_rates_dict = {}
 		pred_opd = {}
 
 		for predict in predicts:
@@ -31,20 +37,21 @@ class NavProved(object):
 			prod_esc[predict.prod_id] = predict.prod_esc
 			pred_opd[predict.prod_id] = predict.prod_pred_opd
 
-		for rate in decline_rates:
-			if rate.prod_id not in decline_rate:
-				decline_rate[rate.prod_id] = []
+		# for rate in decline_rates:
+		# 	if rate.prod_id not in decline_rates_dict:
+		# 		decline_rates_dict[rate.prod_id] = []
 
-			decline_rate[rate.prod_id] = rate.decline_rate
+		# 	decline_rates_dict[rate.prod_id] = rate.decline_rates_dict
 
 		self.prod_diff = prod_diff
 		self.prod_esc = prod_esc
-		self.decline_rate = decline_rate
+		# self.decline_rate = decline_rates_dict
 		self.pred_opd = pred_opd
 
 	def preprocess_prices(self, years, prices):
 		self.sample_years = years
 		self.ticker = prices[0].ticker
+
 		price_samples = {}
 		for item in prices:
 			if item.prod_id not in price_samples:
@@ -55,15 +62,69 @@ class NavProved(object):
 		self.price_samples = price_samples
 		return price_samples
 
+	def get_original_sum(self, production, decline_rate, number_of_years, target):
+		sum = 0.0
+		for i in range(0, number_of_years):
+			sum += production * pow(decline_rate, i)
+		numerator = sum - target
+
+		return numerator
+
+	def get_gradient_sum(self, production, decline_rate, number_of_years):
+		sum = 0.0
+		for i in range(0, number_of_years - 1):
+			sum += production * (float(i) + 1.0) * pow(decline_rate, i)
+		return sum
+
+
+	def estimate_decline_rate(self, production, target, delta, decline_rate, number_of_years):
+		self.timer += 1
+		origin = self.get_original_sum(production, decline_rate, number_of_years, target)
+		estimate = self.get_gradient_sum(production, decline_rate, number_of_years)
+
+		pred_decline_rate = decline_rate - origin / estimate
+
+		delta_val = self.get_original_sum(production, pred_decline_rate, number_of_years, target)
+
+		if delta_val < delta or self.timer > 300:
+			percent = (1.0 - pred_decline_rate) * 100
+			return percent
+		else:
+			return self.estimate_decline_rate(production, target, delta, pred_decline_rate, number_of_years)
+		
+
+	def get_decline_rates(self):
+		initial_productions = {}
+		targets = {}
+		self.timer = 0
+
+		for predict in self.predicts:
+			initial_productions[predict.prod_id] = predict.prod_pred_opd
+			targets[predict.prod_id] = predict.prod.prod_initial_value
+
+		decline_rates = {}
+		number_of_years = self.end - self.start + 1
+
+		for prod_id in initial_productions:
+			decline_rates[prod_id] = self.estimate_decline_rate(float(initial_productions[prod_id]), float(targets[prod_id]), self.delta, 1, number_of_years)
+
+
+		self.decline_rates = decline_rates
+		return decline_rates
+
 	def initialize_prices(self, sum_params):
+		self.preprocess_prices(self.years, self.prices)
+		self.predict_params(self.predicts, self.decline_rates)
+
 		diffs = self.prod_diff
 		escs = self.prod_esc
-		decline_rates = self.decline_rate
+		decline_rates = self.decline_rates
 		pred_opds = self.pred_opd
 
 		tbl_data = []
 		tbl_sample_dict = []
 		sample_len = len(self.price_samples[1])
+
 
 		for idx_year, year in enumerate(range(self.start, self.end + 1)):
 			table_row = []			
@@ -86,16 +147,13 @@ class NavProved(object):
 			total = 0
 			net_revenue = 0
 			for prod_id in self.price_samples:
-				if idx_year == 0:
-					tbl_sample_dict_row[prod_id]['pred'] = pred_opds[prod_id]
-				else:
-					tbl_sample_dict_row[prod_id]['pred'] = tbl_sample_dict[idx_year - 1][prod_id]['pred'] * (1 - decline_rates[prod_id] / 100)
+				tbl_sample_dict_row[prod_id]['pred'] = pred_opds[prod_id] * pow((1.0 - decline_rates[prod_id] / 100.0), idx_year)
 
 				table_row.append(tbl_sample_dict_row[prod_id]['pred'])
 				total += sum_params[prod_id] * tbl_sample_dict_row[prod_id]['pred']
 				
 				# Calculating net revenue value	
-				net_revenue += tbl_sample_dict_row[prod_id]['price'] * tbl_sample_dict_row[prod_id]['pred']			
+				net_revenue += tbl_sample_dict_row[prod_id]['price'] * tbl_sample_dict_row[prod_id]['pred']
 
 			tbl_sample_dict_row['total'] = total
 			table_row.append(total)
@@ -170,7 +228,6 @@ class NavProved(object):
 
 			tbl_sample_dict.append(tbl_sample_dict_row)
 			tbl_data.append(table_row)
-
 
 		return tbl_data
 

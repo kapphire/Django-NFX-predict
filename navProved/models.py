@@ -2,15 +2,6 @@ from django.db import models
 import datetime
 
 # Create your models here.
-class Product(models.Model):
-	name = models.CharField(max_length = 250)
-
-	class Meta:
-		ordering = ('-name',)
-
-	def __str__(self):
-		return self.name
-
 
 class Ticker(models.Model):
 	name = models.CharField(max_length = 250)
@@ -23,6 +14,20 @@ class Ticker(models.Model):
 	capex = models.FloatField()
 	op_cost = models.FloatField()
 	disc_factor = models.FloatField()
+	year = models.IntegerField()
+
+	def __str__(self):
+		return self.name
+
+
+class Product(models.Model):
+	name = models.CharField(max_length = 250)
+	ticker = models.ForeignKey(Ticker, related_name = 'products')
+	prod_initial_value = models.FloatField()
+	sample_unit = models.CharField(max_length = 100, default = '$/bbl')
+	prod_unit = models.CharField(max_length = 100, default = 'MMbbl')
+	class Meta:
+		ordering = ('-name',)
 
 	def __str__(self):
 		return self.name
@@ -54,3 +59,9 @@ class NavProvedResult(models.Model):
 	pv = models.FloatField()
 	pv_boe = models.FloatField()
 	pv_mcfe = models.FloatField()
+
+
+class ProductionTotal(models.Model):
+	ticker = models.ForeignKey(Ticker, related_name = 'productionTotals')
+	prod_total_unit = models.CharField(max_length = 100)
+	prod_total_value = models.FloatField()

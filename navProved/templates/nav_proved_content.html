@@ -34,7 +34,7 @@
         </tbody>
       </table>
     </div>
-    <div class="col-sm-2 col-sm-offset-1 col-md-2 col-lg-2">
+    <div class="col-sm-2 col-sm-offset-2 col-md-2 col-lg-2">
       <table class="table x_content">
         <thead>
           <tr>
@@ -54,7 +54,7 @@
         </tbody>
       </table>
     </div>
-    <div class="col-sm-2 col-sm-offset-1 col-md-2 col-lg-2">
+    <div class="col-sm-2 col-sm-offset-2 col-md-2 col-lg-2">
       <table class="table x_content">
         <thead>
           <tr>
@@ -82,74 +82,76 @@
       <div class="col-sm-2">
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Baseline Oil Price</label>
-          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 55">
+          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 55" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Baseline Gas Price</label>
-          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 3.35">
+          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 3.35" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Oil Differential</label>
-          <input type="text" class="form-control variable-set-dollar" value="-5.38">
+          <input type="text" class="form-control variable-set-dollar" value="-5.38" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Gas Differential</label>
-          <input type="text" class="form-control variable-set-dollar" value="-0.4">
+          <input type="text" class="form-control variable-set-dollar" value="-0.4" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">NGL % of WTI</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="30 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="30 %" disabled>
         </div>
-      </div>   
-      <div class="col-sm-2 col-sm-offset-1">
+      </div>
+      <div class="col-sm-2">
+        {% for predict in predicts %}
+          <div class="input-group input-group-sm small">
+            <label class="input-group-addon">Product_{{ predict.prod.name }}</label>
+            <input type="text" class="form-control variable-set-dollar initial_production" data-id="{{ predict.id }}" value="{{ predict.prod_pred_opd }}" placeholder="$">
+          </div>
+        {% endfor %}
+      </div>  
+      <div class="col-sm-2">
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Prod. Taxes</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="3.7 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="3.7 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Tax Rate</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.5 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.5 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">% Deferred</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="86.2 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="86.2 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Op. Cost Escalation</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.0 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="2.0 %" disabled>
         </div>
       </div>
-      <div class="col-sm-2 col-sm-offset-1">
+      <div class="col-sm-2">
         <div class="input-group input-group-sm">
           <label class="input-group-addon">D, D & A ($/Mcfe)</label>
-          <input type="text" class="form-control variable-set-dollar" value="2.53">
+          <input type="text" class="form-control variable-set-dollar" value="2.53" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Disc. Factor</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="10 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="10 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">% Def after 5 yrs</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="50 %">
+          <input type="text" class="form-control variable-set-percent" placeholder="%" value="50 %" disabled>
         </div>
         <div class="input-group input-group-sm">
           <label class="input-group-addon">Dev Life</label>
-          <input type="text" class="form-control variable-set-dollar" value="5.00">
+          <input type="text" class="form-control variable-set-dollar" value="5.00" disabled>
         </div>
       </div>
-      <div class="col-sm-3 col-sm-offset-1">
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Decline Rate Oil</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="12.4 %" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Decline Rate NGL</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="10.8 %" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Decline Rate Gas</label>
-          <input type="text" class="form-control decline-rate" placeholder="%" value="9.0 %" disabled>
-        </div>
+      <div class="col-sm-2 col-sm-offset-2">
+        {% for decline_rate in decline_rates %}
+          <div class="input-group input-group-sm">
+            <label class="input-group-addon">Decline Rate {{ decline_rate.prod.name }}</label>
+            <input type="text" class="form-control decline-rate" placeholder="%" data-prod-id="{{ decline_rate.prod_id }}" disabled>
+          </div>
+        {% endfor %}
       </div>
     </div>
   </div>
@@ -208,13 +210,13 @@
                 <th scope="col">PV</th>
               </tr>
               <tr>
-                <th scope="row">($/bbl)</th>
-                <td>($/bbl)</td>
-                <td>($/Mcf)</td>
-                <td>(MMbbls)</td>
-                <td>(MMbbls)</td>
-                <td>(Bcf)</td>
-                <td>(Bcfe)</td>
+                {% for product in products %}
+                  <td>{{ product.sample_unit }}</td> 
+                {% endfor %}
+                {% for product in products %}
+                  <td>{{ product.prod_unit }}</td> 
+                {% endfor %}
+                <td>{{ prod_total.prod_total_unit }}</td>
                 <td>($MM)</td>
                 <td>($MM)</td>
                 <td>($/Mcfe)</td>
@@ -230,12 +232,12 @@
               </tr>
             </thead>
             <tfoot>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
+              {% for product in products %}
+                <th></th> 
+              {% endfor %}
+              {% for product in products %}
+                <th></th>
+              {% endfor %}
               <th></th>
               <th></th>
               <th></th>
@@ -255,6 +257,82 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_content">
+        <div class="col-sm-4 col-sm-offset-1">
+          <table class="table x_content">
+            <thead>
+              <th></th>
+              {% for product in products %}
+              <th>{{ product.prod_unit }}</th>
+              {% endfor %}
+              <th>{{ prod_total.prod_total_unit }}</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ ticker.year }}</td>
+                {% for product in products %}
+                  <td>{{ product.prod_initial_value }}</td>
+                {% endfor %}
+                <td>{{ prod_total.prod_total_value }}</td>
+              </tr>
+              <tr>
+                <td>PUD</td>
+                {% for product in products %}
+                  <td><div contenteditable>0</div></td>
+                {% endfor %}
+                <td><div contenteditable>0</div></td>
+              </tr>
+              <tr>
+                <td></td>
+                {% for product in products %}
+                  <td></td>
+                {% endfor %}
+                <td></td>
+              </tr>
+              <tr>
+                <td>Acquisitions / (Sales)</td>
+                {% for product in products %}
+                  <td><div contenteditable>0</td>
+                {% endfor %}
+                <td><div contenteditable>0</td>
+              </tr>
+              <tr>
+                <td>PUD</td>
+                {% for product in products %}
+                  <td><div contenteditable>0</div></td>
+                {% endfor %}
+                <td><div contenteditable>0</div></td>
+              </tr>
+              <tr>
+                <td></td>
+                {% for product in products %}
+                  <td></td>
+                {% endfor %}
+                <td></td>
+              </tr>
+              <tr>
+                <td> ProForma  Reserves</td>
+                {% for product in products %}
+                  <td>0</td>
+                {% endfor %}
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>PUD</td>
+                {% for product in products %}
+                  <td>0</td>
+                {% endfor %}
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>    
   </div>
 <!-- /page content -->
 
