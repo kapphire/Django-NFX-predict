@@ -10,17 +10,13 @@ class NavProved(object):
 		self.sum_param = param['sum_param']
 		self.years = param['years']
 		self.prices = param['prices']
-		self.delta = 0.00005
+		self.delta = 0.1
 		self.early_stage_value = param['early_stage_value']
 
-		# self.preprocess_prices(param['years'], param['prices'])
-		# self.predict_params(param['predicts'], param['decline_rates'])
-		# self.initialize_prices(param['sum_param'])
 
 	def predict_params(self, predicts, decline_rates):
 		prod_diff = {}
 		prod_esc = {}
-		# decline_rates_dict = {}
 		pred_opd = {}
 
 		for predict in predicts:
@@ -36,12 +32,6 @@ class NavProved(object):
 			prod_diff[predict.prod_id] = predict.prod_diff
 			prod_esc[predict.prod_id] = predict.prod_esc
 			pred_opd[predict.prod_id] = predict.prod_pred_opd
-
-		# for rate in decline_rates:
-		# 	if rate.prod_id not in decline_rates_dict:
-		# 		decline_rates_dict[rate.prod_id] = []
-
-		# 	decline_rates_dict[rate.prod_id] = rate.decline_rates_dict
 
 		self.prod_diff = prod_diff
 		self.prod_esc = prod_esc
