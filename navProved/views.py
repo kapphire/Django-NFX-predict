@@ -5,7 +5,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from .models import Product, Ticker, Price, Predict, DeclineRate, ProductionTotal
+from .models import *
 from .common.formulas import NavProved
 
 
@@ -26,8 +26,6 @@ def navProved(request):
 	for dev_life in range(0, year_range):
 		years.append(cur_year + dev_life)
 	prices = Price.objects.filter(ticker = ticker_id, year__in = years).order_by('prod_id').all()
-
-	print(predicts)
 
 	return render(request, 'nav_proved_content.html', {'products' : products, 'prices' : prices, 'ticker' : ticker, "decline_rates" : decline_rates, "predicts" : predicts, "prod_total" : prod_total})
 
@@ -105,4 +103,3 @@ def changeInitProduct(request):
 			return JsonResponse({
 				'status' : True,
 			})
-		

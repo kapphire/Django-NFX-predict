@@ -218,7 +218,6 @@ class NavProved(object):
 
 			tbl_sample_dict.append(tbl_sample_dict_row)
 			tbl_data.append(table_row)
-
 		return tbl_data
 
 if __name__ == "__main__":
