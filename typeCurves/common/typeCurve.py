@@ -1,4 +1,5 @@
 import math
+import numpy
 
 
 class TypeCurveStatic(object):
@@ -704,7 +705,17 @@ class TypeCurveStatic(object):
 
 			table_data.append(table_data_row)
 			table_data_dict.append(table_data_row_dict)	
-
+		
+		cash_flow_arr = [self.cash_flow]
+		for idx, ele in enumerate(table_data_dict):
+			cash_flow_arr.append(ele['cash_flow'])
+		self.cash_flow_arr = cash_flow_arr
 
 		return table_data
 
+
+	def get_irr(self):
+		irr = round(numpy.irr(self.cash_flow_arr), 5)
+		npv = round(numpy.npv(0.1, self.cash_flow_arr), 5)
+		pv_eur = npv / self.eur_total
+		return {'irr' : irr, 'npv' : npv, 'pv_eur' : pv_eur}

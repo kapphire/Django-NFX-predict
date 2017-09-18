@@ -46,9 +46,9 @@ let TypeCurves = (() => {
 			window.typeCurveTable.row.add(row).draw();
 		}
 
-		// $("#pv").text('$ ' + get2DigitNumber(footerData[footerData.length - 1]));
-		// $("#pv_1").text('$ ' + get2DigitNumber(footerData[footerData.length - 1] * 6 / footerData[footerData.length - 13]));
-		// $("#pv_2").text('$ ' + get2DigitNumber(footerData[footerData.length - 1] / footerData[footerData.length - 13]));
+		$("#irr").text(get2DigitNumber(response.irr) + ' %');
+		$("#pv10").text(get2DigitNumber(response.npv));
+		$("#pv_eur").text(get2DigitNumber(response.pv));
 
 		let declineRates = response.decline_rates;
 		for (key in declineRates) {

@@ -96,11 +96,18 @@ def typeCurveAjax(request):
 			PlayProdDecline.objects.filter(prod_id = prod_id, ticker_id = ticker_id, play_id = play_id).update(decline = decline_rates[prod_id])
 
 		result = typeCurveAjax.typeCurveTableData()
+		irr_npv_pv = typeCurveAjax.get_irr()
+		irr = irr_npv_pv['irr'] * 100
+		npv = irr_npv_pv['npv']
+		pv = irr_npv_pv['pv_eur']
 		
 		return JsonResponse({
 				'status' : True,
 				'result' : result,
-				'decline_rates' : decline_rates
+				'decline_rates' : decline_rates,
+				'irr' : irr,
+				'npv' : npv,
+				'pv' : pv
 			})
 
 
@@ -149,10 +156,19 @@ def changeInitProduct(request):
 
 			result = typeCurveAjax.typeCurveTableData()
 			
+			result = typeCurveAjax.typeCurveTableData()
+			irr_npv_pv = typeCurveAjax.get_irr()
+			irr = irr_npv_pv['irr'] * 100
+			npv = irr_npv_pv['npv']
+			pv = irr_npv_pv['pv_eur']
+			
 			return JsonResponse({
 					'status' : True,
 					'result' : result,
-					'decline_rates' : decline_rates
+					'decline_rates' : decline_rates,
+					'irr' : irr,
+					'npv' : npv,
+					'pv' : pv
 				})
 		else:			
 			return JsonResponse({
