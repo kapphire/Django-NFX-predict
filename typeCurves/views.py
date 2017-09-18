@@ -19,7 +19,7 @@ def typeCurve(request):
 	products = Product.objects.filter(ticker = ticker_id).order_by('id')
 	prices = Price.objects.filter(ticker = ticker_id).order_by('id').all()
 	play_names = Play.objects.filter(ticker_id = ticker_id).get()
-	play_prods = PlayProduction.objects.filter(play_id = play_id).all()
+	play_prods = PlayProduction.objects.filter(play_id = play_id).order_by('id').all()
 	play_scraped_data = PlayScrapedData.objects.filter(play_id = play_id).order_by('id').all()
 	play_common_input_class = PlayCommonInputClass.objects.filter(play_id = play_id).order_by('id').all()
 	play_prod_date_choices = PlayProductionDateChoice.objects.filter(ticker_id = ticker_id).order_by('id').all()
