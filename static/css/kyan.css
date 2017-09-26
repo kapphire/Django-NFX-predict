@@ -27,3 +27,12 @@ table th {
   color: #afafac;
   cursor: text;
 }
+
+h2 {
+  text-align: center;
+}
+
+.p {
+  text-align: center;
+  padding-top: 130px;
+}

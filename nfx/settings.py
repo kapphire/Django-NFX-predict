@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6!nz2t_gf5!48n3&)rixrtw)lsguc$v&e+pzgi_4h9@a%%7_7m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['ec2-18-220-32-97.us-east-2.compute.amazonaws.com', 'localhost']
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'navProved',
     'typeCurves',
+    'navTotal',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -107,7 +108,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
