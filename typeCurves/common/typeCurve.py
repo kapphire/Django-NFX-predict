@@ -135,7 +135,7 @@ class TypeCurveStatic(object):
 		self.prods_date = prods_date
 		self.pp_e = self.eur_total * self.total_f_d
 		self.cash_flow = -self.pp_e
-		return {'prod_price_diffs' : prod_price_diffs, 'prods_date' : prods_date, 'drilling_f_d' : drilling_f_d, 'total_f_d' : self.total_f_d}
+		return {'prod_price_diffs' : prod_price_diffs, 'prods_date' : prods_date, 'drilling_f_d' : drilling_f_d, 'total_f_d' : self.total_f_d, 'well_cost' : self.well_cost}
 
 
 	def get_original_sum(self, production, decline_rate, number_of_years, target):

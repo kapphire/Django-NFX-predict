@@ -26,6 +26,7 @@ class Product(models.Model):
 	prod_initial_value = models.FloatField()
 	sample_unit = models.CharField(max_length = 100, default = '$/bbl')
 	prod_unit = models.CharField(max_length = 100, default = 'MMbbl')
+	nav_total_unit = models.CharField(max_length = 100, default = 'Mmboe')
 	class Meta:
 		ordering = ('-name',)
 

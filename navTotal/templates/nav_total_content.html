@@ -1,192 +1,449 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load app_filters %}
 
 {% block content %}
 <div class="right_col" role="main">
   <!-- top tiles -->
-  <div class="docs-data" class="col-sm-12">
-    <div class="col-sm-4 col-md-4 col-lg-4">
-      <table class="table x_content">
-        <thead>
-          <tr>
-            <th>NFX</th>
-            <th>Inflation</th>
-            <th>Rig Case</th>
-            <th>2019</th>
-            <th>2020</th>
-            <th>2021</th>
-            <th>Escalation</th>
-          </tr>
-        </thead>
-        <tbody id="price">
-          {% for product in products %}
-            <tr>
-              <td><div contenteditable>{{ product.name }}</div></td>
-              {% for price in prices %}
-                {% if product.id == price.prod_id %}
-                  <td><div contenteditable>$ {{ price.price }}</div></td>
-                {% endif %}
-              {% endfor %}
-              <td><div contenteditable>{{ ticker.op_cost_esc }} %</div></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>  
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
-      <div class="col-sm-2">
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Baseline Oil Price</label>
-          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 55" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Baseline Gas Price</label>
-          <input type="text" class="form-control variable-set-dollar" placeholder="$" value="$ 3.35" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Oil Differential</label>
-          <input type="text" class="form-control variable-set-dollar" value="-5.38" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Gas Differential</label>
-          <input type="text" class="form-control variable-set-dollar" value="-0.4" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">NGL % of WTI</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="30 %" disabled>
-        </div>
+      <div class="x_title">
+        <h3>NFX</h3>
       </div>
-      <div class="col-sm-2">
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">D, D & A ($/Mcfe)</label>
-          <input type="text" class="form-control variable-set-dollar" value="2.53" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Disc. Factor</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="10 %" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">% Def after 5 yrs</label>
-          <input type="text" class="form-control variable-set-percent" placeholder="%" value="50 %" disabled>
-        </div>
-        <div class="input-group input-group-sm">
-          <label class="input-group-addon">Dev Life</label>
-          <input type="text" class="form-control variable-set-dollar" value="5.00" disabled>
-        </div>
+      <div class="x_content">
+        <table class="table table-hover" id="nav-total-init">
+          <thead>
+            <tr>
+              <th>Net Asset Value Summary</th>
+              <th>Inflation</th>
+              <th>Rig Case</th>
+              <th>M&A Case</th>
+              <th>NGL as % of WTI</th>
+              <th>Duration</th>
+              <th>r =</th>              
+              <th>Year?</th>
+              <th>BOE or Mcfe?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" name="total-net-asset-value" class="total-variables" id="total-net-asset-value"></td>
+              <td><input type="text" name="total-inflation" class="total-variables" id="total-inflation"></td>
+              <td>
+                <select id="total-rig">
+                  <option value="1" selected>yes</option>
+                  <option value="0">no</option>
+                </select>
+              </td>
+              <td>
+                <select id="total-m-a" disabled>
+                  <option value="1">yes</option>
+                  <option value="0">no</option>
+                </select>
+              </td>
+              <td><input type="text" name="total-ngl-percent" class="total-variables" id="total-ngl-percent"></td>
+              <td><input type="text" name="total-duration" class="total-variables" id="total-duration"></td>
+              <td></td>
+              <td><input type="text" name="total-year-define" class="total-variables" id="total-year-define"></td>
+              <td>
+                <select id="total-boe-mcfe">
+                  <option value="1" selected="">B</option>
+                  <option value="0">M</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-info btn-sm" id="confirm-total-variable">Confirm</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>        
       </div>
     </div>
   </div>
-  <br />
-
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_content">
         <div class="x_content">
-          <div class="col-sm-4">
-            <div class="col-sm-4">
-              <input type="text" class="form-control date-range" placeholder="2017">
+          <div class="col-md-3 col-sm-3 col-xs-3">
+            <div class="container">
+              <div class="row text-center">
+                  <button href="#" class="btn btn-info btn-lg" data-toggle="modal" data-target="#add-play">Add Play</button>
+              </div>
             </div>
-            <div class="col-sm-4">
-              <input type="text" class="form-control date-range" placeholder="end year">
-            </div>
-            <div class="col-sm-4">
-              <button class="btn btn-success" id="sendAjaxData">Go</button>
-              {% csrf_token %}
+            <div class="modal fade" id="add-play" tabindex="-1" role="dialog" aria-labelledby="add-play" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Unproven Unconventional Reserve Potential</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_title">
+                          <div class="btn-group btn-group" data-toggle="buttons">
+                            <label class="btn" id="unconventional-toggle">
+                              <input type="checkbox" name='unconvential'>
+                              <i class="fa fa-square-o fa-2x"></i>
+                              <i class="fa fa-check-square-o fa-2x"></i>
+                              <span> Unproven Unconventional Reserve Potential
+                            </label>
+                            <label class="btn" id="conventional-toggle">
+                              <input type="checkbox" name='convential'>
+                              <i class="fa fa-square-o fa-2x"></i>
+                              <i class="fa fa-check-square-o fa-2x"></i>
+                              <span> Unproven Conventional Reserve Potential</span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row" id="unconventional" style="display: none;">
+                          <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div>
+                              <h5>Region : Anadarko (South)</h5>
+                            </div>
+                            <div class="col-md-5 col-sm-5 col-xs-5">
+                              <table class="table table-hover table-bordered" id="add-play-unconventional">
+                                <thead>
+                                  <tr>
+                                    {% for product in products %}
+                                      <th>{{ product.name }}</th>
+                                    {% endfor %}
+                                    <th>Total</th>
+                                    <th colspan="4" scope="colgroup">Asset Value</th>
+                                  </tr>
+                                  <tr>
+                                    {% for product in products %}
+                                      <th>{{ product.prod_unit }}</th>
+                                    {% endfor %}
+                                    <th>MMBoe</th>
+                                    <th>%Gas</th>
+                                    <th>$/Boe</th>
+                                    <th>$MM</th>
+                                    <th>$/Share</th>
+                                  </tr>
+                                </thead>
+                              </table>
+                            </div>
+                            <div class="col-md-7 col-sm-7 col-xs-7">
+                              <table class="table table-hover table-bordered" id="add-play-unconventional-input">
+                                <thead>
+                                  <tr>
+                                    <th></th>
+                                    <th colspan="3" scope="colgroup">EUR / Well</th>
+                                    <th colspan="3" scope="colgroup"></th>
+                                    <th colspan="5" scope="colgroup">Net Resource</th>
+                                    <th>Well Cost</th>
+                                    <th></th>
+                                    <th>Zone</th>
+                                    <th>Well PV10</th>
+                                    <th>WellPV/Boe</th>
+                                    <th colspan="2" scope="colgroup"></th>
+                                    <th>Days to</th>
+                                    <th colspan="2" scope="colgroup"></th>
+                                    <th>Drilled</th>
+                                    <th>M&A</th>
+                                  </tr>
+                                  <tr>
+                                    <th>Acres</th>
+                                    {% for product in products %}
+                                      <th>{{ product.name }}({{ product.nav_total_unit }})</th>
+                                    {% endfor %}
+                                    <th>Risk</th>
+                                    <th>Spacing</th>
+                                    <th>$/acre</th>
+                                    <th>Acreage</th>
+                                    {% for product in products %}
+                                      <th>{{ product.name }}({{ product.prod_unit }})</th>
+                                    {% endfor %}
+                                    <th>Wells</th>
+                                    <th>($mm)</th>
+                                    <th>Zones</th>
+                                    <th>Prospectivity</th>
+                                    <th>($mm)</th>
+                                    <th>($/boe)</th>
+                                    <th>IRR</th>
+                                    <th>Rigs</th>
+                                    <th>Drill</th>
+                                    <th>Wells/Yr</th>
+                                    <th>Years</th>
+                                    <th>Wells</th>
+                                    <th>Years</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td><input type="text" name="acre-unconv" class="reserve-potential-inputs" id="acre-unconv"></td>
+                                    {% for prod in prods_date %}                                      
+                                      <td>{{ prod.eur|customRound }} {% if prod.prod_id != 2 %}Mboe/well{% else %}b/well{% endif %}</td>                               
+                                    {% endfor %}
+                                    <td><input type="text" name="risk-unconv" class="reserve-potential-inputs" id="risk-unconv"></td>
+                                    <td><input type="text" name="spacing" class="reserve-potential-inputs" id="spacing"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><input type="text" name="zone" class="reserve-potential-inputs" id="zone"></td>
+                                    <td><input type="text" name="zone-pros" class="reserve-potential-inputs" id="zone-pros"></td>
+                                    <td>${{ play_result.pv_10|customRound }}</td>
+                                    <td>${{ play_result.pv_eur|customRound }}</td>
+                                    <td>{{ play_result.irr|customRound }} %</td>
+                                    <td><input type="text" name="rigs" class="reserve-potential-inputs" id="rigs"></td>
+                                    <td><input type="text" name="days-to" class="reserve-potential-inputs" id="days-to"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><input type="text" name="drilled" class="reserve-potential-inputs" id="drilled"></td>
+                                    <td></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <button type="button" class="btn btn-info reserve-potential" id="unconventional-view">View</button>
+                            </div>
+                          </div>                        
+                        </div>
+                        <div class="row" id="conventional" style="display: none">
+                          <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div>
+                              <h5>Region : Brazil</h5>
+                            </div>
+                            <div class="col-md-5 col-sm-5 col-xs-5">
+                              <table class="table table-hover table-bordered" id="add-play-conventional">
+                                <thead>
+                                  <tr>
+                                    {% for product in products %}
+                                      <th>{{ product.name }}</th>
+                                    {% endfor %}
+                                    <th>Total</th>
+                                    <th colspan="4" scope="colgroup">Asset Value</th>
+                                  </tr>
+                                  <tr>
+                                    {% for product in products %}
+                                      <th>{{ product.prod_unit }}</th>
+                                    {% endfor %}
+                                    <th>MMBoe</th>
+                                    <th>%Gas</th>
+                                    <th>$/Boe</th>
+                                    <th>$MM</th>
+                                    <th>$/Share</th>
+                                  </tr>
+                                </thead>
+                              </table>
+                            </div>
+                            <div class="col-md-7 col-sm-7 col-xs-7">
+                              <table class="table table-hover table-bordered" id="add-play-conventional-input">
+                                <thead>
+                                  <tr>
+                                    <th>1st HC</th>
+                                    <th>Flat</th>
+                                    <th>1st Production</th>
+                                    <th>Dev Cost</th>
+                                    <th></th>
+                                    <th>Operator</th>
+                                    <th>Royalty</th>
+                                    <th colspan="5" scope="colgroup">Geologic Risk</th>
+                                    <th colspan="2" scope="colgroup"></th>
+                                    <th>Drainage</th>
+                                    <th>Mean</th>
+                                    <th>Acre-</th>
+                                    <th>Boe/Acre-</th>
+                                    <th colspan="2" scope="colgroup">Est. Resources (Mmboe)</th>
+                                    {% for product in products %}
+                                      <th>%</th>
+                                    {% endfor %}
+                                    <th></th>
+                                    <th>Proved</th>
+                                  </tr>
+                                  <tr>
+                                    <th>Date</th>
+                                    <th>Profile</th>
+                                    <th>(Mmboe)</th>
+                                    <th>$mm</th>
+                                    <th>W.I.</th>
+                                    <th></th>
+                                    <th>Interest</th>
+                                    <th>Trap</th>
+                                    <th>Reservoir</th>
+                                    <th>Seal</th>
+                                    <th>Timing</th>
+                                    <th>Commercial</th>
+                                    <th>Ps</th>
+                                    <th>Closure</th>
+                                    <th>(Acres)</th>
+                                    <th>Net Pay (ft)</th>
+                                    <th>Feet</th>
+                                    <th>Feet</th>
+                                    <th>Gross</th>
+                                    <th>Expected</th>                                    
+                                    {% for product in products %}
+                                      <th>{{ product.name }}</th>
+                                    {% endfor %}
+                                    <th>Risk</th>
+                                    <th>Booked?</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td><input type="text" name="lst-hc" class="reserve-potential-inputs" id="lst-hc"></td>
+                                    <td><input type="text" name="flat" class="reserve-potential-inputs" id="flat"></td>
+                                    <td><input type="text" name="lst_prod" class="reserve-potential-inputs" id="lst_prod"></td>
+                                    <td><input type="text" name="dev-cost" class="reserve-potential-inputs" id="dev-cost"></td>
+                                    <td><input type="text" name="wl" class="reserve-potential-inputs" id="wl"></td>
+                                    <td><input type="text" name="operator" class="reserve-potential-inputs" id="operator"></td>
+                                    <td><input type="text" name="royalty" class="reserve-potential-inputs" id="royalty"></td>
+                                    <td><input type="text" name="trap" class="reserve-potential-inputs" id="trap"></td>
+                                    <td><input type="text" name="reservoir" class="reserve-potential-inputs" id="reservoir"></td>
+                                    <td><input type="text" name="seal" class="reserve-potential-inputs" id="seal"></td>
+                                    <td><input type="text" name="timing" class="reserve-potential-inputs" id="timing"></td>
+                                    <td><input type="text" name="commercial" class="reserve-potential-inputs" id="commercial"></td>
+                                    <td></td>
+                                    <td><input type="text" name="closure" class="reserve-potential-inputs" id="closure"></td>
+                                    <td><input type="text" name="drainage" class="reserve-potential-inputs" id="drainage"></td>
+                                    <td><input type="text" name="mean" class="reserve-potential-inputs" id="mean"></td>
+                                    <td></td>
+                                    <td><input type="text" name="boe-feet" class="reserve-potential-inputs" id="boe-feet"></td>
+                                    <td></td>
+                                    <td><input type="text" name="days-to" class="reserve-potential-inputs" id="days-to"></td>
+                                    <td><input type="text" name="oil-conv" class="reserve-potential-inputs" id="oil-conv"></td>
+                                    <td><input type="text" name="gas-conv" class="reserve-potential-inputs" id="gas-conv"></td>
+                                    <td></td>
+                                    <td><input type="text" name="risk_conv" class="reserve-potential-inputs" id="risk_conv"></td>
+                                    <td><input type="text" name="proved-book" class="reserve-potential-inputs" id="proved-book"></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <button type="button" class="btn btn-info reserve-potential">View</button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row" id="total-unproven-state" style="display: none;">
+                          <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div>
+                              <h5>Total Unproven Reserve Potential</h5>
+                            </div>
+                            <div class="col-md-5 col-sm-5 col-xs-5">
+                              <table class="table table-hover table-bordered" id="total-unproven-potential">
+                                <thead>
+                                  <tr>
+                                    {% for product in products %}
+                                      <th>{{ product.prod_unit }}</th>
+                                    {% endfor %}
+                                    <th>MMBoe</th>
+                                    <th>%Gas</th>
+                                    <th>$/Boe</th>
+                                    <th>$MM</th>
+                                    <th>$/Share</th>
+                                  </tr>
+                                </thead>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>       
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="x_content">
-          <table class="table table-striped table-bordered" cellspacing="0" width="100%" id="datatable">
-            <thead>              
-              <tr>
-                <td rowspan="3"></td>
-                <th colspan="3" scope="colgroup"></th>
-                <th colspan="4" scope="colgroup">Production</th>
-                <th colspan="4">Net</th>
-                <th scope="col">Prodn.</th>
-                <th scope="col"></th>
-                <th scope="col">Less</th>
-                <th scope="col"></th>
-                <th scope="col">Tax</th>
-                <th colspan="3" scope="colgroup"></th>
-              </tr>
-              <tr>
-                {% for product in products %}
-                  <th scope="col">{{ product.name }}</th>
-                {% endfor  %}
-                {% for product in products %}
-                  <th scope="col">{{ product.name }}</th>
-                {% endfor  %}
-                <th scope="col">Total</th>
-                <th scope="col">Revenues</th>
-                <th scope="col">Capex</th>
-                <th colspan="2" scope="colgroup">Operating Costs</th>
-                <th scope="col">Taxes</th>
-                <th scope="col">CFO</th>
-                <th scope="col">DD&A</th>
-                <th scope="col">Operating income</th>
-                <th scope="col">(Net of Deferred)</th>
-                <th scope="col">FCF</th>
-                <th scope="col">Discount</th>
-                <th scope="col">PV</th>
-              </tr>
-              <tr>
-                {% for product in products %}
-                  <td>{{ product.sample_unit }}</td> 
-                {% endfor %}
-                {% for product in products %}
-                  <td>{{ product.prod_unit }}</td> 
-                {% endfor %}
-                <td>{{ prod_total.prod_total_unit }}</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($/Mcfe)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>($MM)</td>
-                <td>Factor</td>
-                <td>($MM)</td>
-              </tr>
-            </thead>
-            <tfoot>
-              {% for product in products %}
-                <th></th> 
-              {% endfor %}
-              {% for product in products %}
-                <th></th>
-              {% endfor %}
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-      <div class="x_content">
-        <div class="x_content">
+          <div class="col-md-3 col-sm-3 col-xs-3">
+            <div class="container">
+              <div class="row text-center">
+                  <button href="#" class="btn btn-info btn-lg" data-toggle="modal" data-target="#equity-offering">New Equity Offering</button>
+              </div>
+            </div>
+            <div class="modal fade" id="equity-offering" tabindex="-1" role="dialog" aria-labelledby="equity-offering" aria-hidden="true">
+              <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Equity Offering</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_content">
+                          <table class="table table-hover">
+                            <tbody>
+                              <tr>
+                                <td>Date</td>
+                                <td><div contenteditable>02/25/2016</div></td>
+                                <td>
+                                  <select>
+                                    <option value="1" selected>Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Share amount</td>                                
+                                <td><div contenteditable>mm</div></td>
+                                <td><div contenteditable>29.0</div></td>
+                              </tr>
+                              <tr>
+                                <td>Shoe</td>                                
+                                <td><div contenteditable>15%</div></td>
+                                <td><div contenteditable>4.4</div></td> 
+                              </tr>
+                              <tr>
+                                <td>Total shares issued</td>                                
+                                <td></td>             
+                                <td><div contenteditable>33.4</div></td> 
+                              </tr>
+                              <tr>
+                                <td></td>                                
+                                <td></td>
+                                <td></td>             
+                              </tr>
+                              <tr>
+                                <td>Last price</td>                                
+                                <td></td>             
+                                <td><div contenteditable>24.41</div></td> 
+                              </tr>
+                              <tr>
+                                <td>Gross issue price</td>                                
+                                <td><div contenteditable>-5%</div></td>             
+                                <td><div contenteditable>33.4</div></td> 
+                              </tr>
+                              <tr>
+                                <td>Net issue price</td>                                
+                                <td><div contenteditable>-3.5%</div></td>             
+                                <td><div contenteditable>33.4</div></td> 
+                              </tr>
+                              <tr>
+                                <td></td>                                
+                                <td></td>
+                                <td></td>             
+                              </tr>
+                              <tr>
+                                <td>Gross proceeds</td>                                
+                                <td></td>             
+                                <td>773</td> 
+                              </tr>
+                              <tr>
+                                <th>Net proceeds</th>                                
+                                <td></td>             
+                                <th>746</th> 
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info">Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="col-md-3 col-sm-3 col-xs-3">
             <div class="container">
               <div class="row text-center">
@@ -205,17 +462,27 @@
                       <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="col-md-6 col-sm-6 col-xs-6">
                           <div class="x_title">
-                            <h4>Uses (Acquisition)</h4>
+                            <h4>Sources</h4>
                           </div>
                           <div class="x_content">
                             <table class="table">
                               <thead>
                                 <tr>
+                                  <th>Shares</th>                                  
+                                  <th><div contenteditable>23</div></th>
+                                  <th><div contenteditable>17.96</div></th>
+                                  <th id="cash">$412</th>
+                                </tr>
+                                <tr>
                                   <th>Cash</th>
-                                  <th id="cash">$600</th>
+                                  <th></th>
+                                  <th></th>
+                                  <th id="sale-total">$187</th>
                                 </tr>
                                 <tr>
                                   <th>Total</th>
+                                  <th></th>
+                                  <th></th>
                                   <th id="sale-total">$600</th>
                                 </tr>
                               </thead>
@@ -224,7 +491,7 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-6">
                           <div class="x_title">
-                            <h4>Sources</h4>
+                            <h4>Uses (Acquisition)</h4>
                           </div>
                           <div class="x_content">
                             <table class="table table-hover">
@@ -323,7 +590,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4 col-sm-4 col-xs-4">
+          <div class="col-md-3 col-sm-3 col-xs-3">
             <div class="container">
               <div class="row text-center">
                   <button href="#" class="btn btn-info btn-lg" data-toggle="modal" data-target="#asset-sale">Add Asset Sale</button>
@@ -464,5 +731,124 @@
       </div>
     </div>
   </div>
+  <div class="docs-data" class="col-sm-12">
+    <div class="col-sm-4 col-md-4 col-lg-4">      
+      <table class="table x_content">
+        <thead>
+          <tr>
+            <th>Sources</th>
+            <th>P($mm)</th>
+            <th>P(s)</th>
+            <th>P(s)xP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Asset Sale Proceeds</td>
+            <td>$600</td>
+            <td>100.0%</td>
+            <td>$600</td>
+          </tr>
+          <tr>
+            <td>Asset Sale Carries</td>
+            <td></td>
+            <td>0%</td>
+            <td>$0</td>
+          </tr>
+          <tr>
+            <td>Equity Proceeds</td>
+            <td>$1159</td>
+            <td>100.0%</td>
+            <td>$1159</td>
+          </tr>
+          <tr>
+            <td>Net S&U</td>
+            <td></td>
+            <td></td>
+            <td>$1759</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-4 col-md-4 col-lg-4 col-sm-offset-1">      
+      <table class="table x_content">
+        <thead>
+          <tr>
+            <th>Uses</th>
+            <th>P($mm)</th>
+            <th>P(s)</th>
+            <th>P(s)xP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Asset Purchase Monies</td>
+            <td>$600</td>
+            <td>100.0%</td>
+            <td>$600</td>
+          </tr>
+          <tr>
+            <td>Asset Purchase Carries</td>
+            <td></td>
+            <td>0%</td>
+            <td>$0</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>$600</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>  
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_content">
+        <div class="x_title">
+          <h4>Proved Reserves</h4>
+        </div>
+        <div class="x_content">
+          <table class="table table-hover data-tables" id="proved-reserves">
+            <thead>
+              <tr>
+                <th rowspan="2">Oil & Gas Properties</th>
+                <th rowspan="2">Sold</th>
+                {% for product in products %}
+                  <th>{{ product.name }}</th>
+                {% endfor %}
+                <th>Total</th>
+                <th colspan="4" scope="colgroup">Asset Value</th>
+              </tr>
+              <tr>
+                {% for product in products %}
+                  <th>{{ product.prod_unit }}</th>
+                {% endfor %}
+                <th>MMBoe</th>
+                <th>%Gas</th>
+                <th>$/Boe</th>
+                <th>$MM</th>
+                <th>$/Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              <td>United States</td>
+              <td></td>
+              <td>186</td>
+              <td>95</td>
+              <td>1363</td>
+              <td>413</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
 </div>
 {% endblock %}

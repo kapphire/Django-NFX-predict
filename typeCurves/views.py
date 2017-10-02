@@ -36,7 +36,7 @@ def typeCurve(request):
 			'play_scraped_data' : play_scraped_data,
 			'play_common_input_class' : play_common_input_class,
 			'play_prod_date_choices' : play_prod_date_choices,
-				'play_prod_declines' : play_prod_declines
+			'play_prod_declines' : play_prod_declines
 		})
 	prod_price_diffs = typeCurveStatic.preprocess()['prod_price_diffs']
 	prods_date = typeCurveStatic.preprocess()['prods_date']
@@ -100,6 +100,18 @@ def typeCurveAjax(request):
 		irr = irr_npv_pv['irr'] * 100
 		npv = irr_npv_pv['npv']
 		pv = irr_npv_pv['pv_eur']
+
+		playResult = PlayResult.objects.filter(ticker_id = ticker_id, play_id = play_id).get()
+
+		if playResult is None:
+				insert_result = PlayResult(irr = irr, pv_10 = npv, pv_eur = pv)
+				insert_result.save()
+		else:
+			playResult.irr = irr
+			
+			playResult.pv_10 = npv
+			playResult.pv_eur = pv
+			playResult.save()
 		
 		return JsonResponse({
 				'status' : True,
@@ -161,6 +173,17 @@ def changeInitProduct(request):
 			irr = irr_npv_pv['irr'] * 100
 			npv = irr_npv_pv['npv']
 			pv = irr_npv_pv['pv_eur']
+
+			playResult = PlayResult.objects.filter(ticker_id = ticker_id, play_id = play_id).get()
+
+			if playResult is None:
+				insert_result = PlayResult(irr = irr, pv_10 = npv, pv_eur = pv)
+				insert_result.save()
+			else:
+				playResult.irr = irr
+				playResult.pv_10 = npv
+				playResult.pv_eur = pv
+				playResult.save()
 			
 			return JsonResponse({
 					'status' : True,
