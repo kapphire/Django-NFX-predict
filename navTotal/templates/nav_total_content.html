@@ -23,17 +23,28 @@
               <th>Duration</th>
               <th>r =</th>              
               <th>Year?</th>
+              <th>Latest Filing</th>
               <th>BOE or Mcfe?</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><input type="text" name="total-net-asset-value" class="total-variables" id="total-net-asset-value"></td>
-              <td><input type="text" name="total-inflation" class="total-variables" id="total-inflation"></td>
+              <td>
+                <input type="text" name="total-net-asset-value" class="total-variables" id="total-net-asset-value" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.net_asset_summary}}{% endif %}">&nbsp;%
+              </td>
+              <td>
+                <input type="text" name="total-inflation" class="total-variables" id="total-inflation" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.inflation}}{% endif %}">&nbsp;%
+              </td>
               <td>
                 <select id="total-rig">
-                  <option value="1" selected>yes</option>
-                  <option value="0">no</option>
+                {% if total_init_variables == None %}
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                {% else %}
+                  <option value="1" {% if total_init_variables.rig_case == 1 %}selected{% endif %}>Yes</option>
+                  <option value="0" {% if total_init_variables.rig_case == 0 %}selected{% endif %}>No</option>
+                {% endif %}
                 </select>
               </td>
               <td>
@@ -42,18 +53,38 @@
                   <option value="0">no</option>
                 </select>
               </td>
-              <td><input type="text" name="total-ngl-percent" class="total-variables" id="total-ngl-percent"></td>
-              <td><input type="text" name="total-duration" class="total-variables" id="total-duration"></td>
+              <td id="total-ngl-percent">
+                &nbsp;%
+              </td>
+              <td>
+                <input type="text" name="total-duration" class="total-variables" id="total-duration" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.duration}}{% endif %}">
+                &nbsp;yrs
+              </td>
               <td></td>
-              <td><input type="text" name="total-year-define" class="total-variables" id="total-year-define"></td>
+              <td>
+                <input type="text" name="total-year-define" class="total-variables" id="total-year-define" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.year}}{% endif %}">
+              </td>
+              <td>
+                <div class="col-md-11 xdisplay_inputx form-group has-feedback">
+                  <input type="text" class="form-control has-feedback-left value-summary-date" id="single_cal1" aria-describedby="inputSuccess2Status3" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.date|changeDate}}{% endif %}">
+                  <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
+                  <span id="inputSuccess2Status3" class="sr-only">(success)</span>
+                </div>
+              </td>
               <td>
                 <select id="total-boe-mcfe">
-                  <option value="1" selected="">B</option>
+                {% if total_init_variables == None %}
+                  <option value="1">B</option>
                   <option value="0">M</option>
+                {% else %}
+                  <option value="1" {% if total_init_variables.boe_mcfe == 1 %}selected{% endif %}>B</option>
+                  <option value="0" {% if total_init_variables.boe_mcfe == 0 %}selected{% endif %}>M</option>
+                {% endif %}
                 </select>
               </td>
               <td>
                 <button class="btn btn-info btn-sm" id="confirm-total-variable">Confirm</button>
+                {% csrf_token %} 
               </td>
             </tr>
           </tbody>
@@ -69,6 +100,7 @@
             <div class="container">
               <div class="row text-center">
                   <button href="#" class="btn btn-info btn-lg" data-toggle="modal" data-target="#add-play">Add Play</button>
+                  {% csrf_token %}
               </div>
             </div>
             <div class="modal fade" id="add-play" tabindex="-1" role="dialog" aria-labelledby="add-play" aria-hidden="true">
@@ -106,15 +138,23 @@
                               <table class="table table-hover table-bordered" id="add-play-unconventional">
                                 <thead>
                                   <tr>
-                                    {% for product in products %}
-                                      <th>{{ product.name }}</th>
+                                    {% for prod in prods_date %}
+                                      {% for product in products %}
+                                        {% if product.id == prod.prod_id %}
+                                          <th>{{ product.name }}</th>
+                                        {% endif %}
+                                      {% endfor %}
                                     {% endfor %}
                                     <th>Total</th>
                                     <th colspan="4" scope="colgroup">Asset Value</th>
                                   </tr>
                                   <tr>
-                                    {% for product in products %}
-                                      <th>{{ product.prod_unit }}</th>
+                                    {% for prod in prods_date %}
+                                      {% for product in products %}
+                                        {% if product.id == prod.prod_id %}
+                                          <th>{{ product.prod_unit }}</th>
+                                        {% endif %}
+                                      {% endfor %}
                                     {% endfor %}
                                     <th>MMBoe</th>
                                     <th>%Gas</th>
@@ -146,15 +186,23 @@
                                   </tr>
                                   <tr>
                                     <th>Acres</th>
-                                    {% for product in products %}
-                                      <th>{{ product.name }}({{ product.nav_total_unit }})</th>
+                                    {% for prod in prods_date %}
+                                      {% for product in products %}
+                                        {% if product.id == prod.prod_id %}
+                                          <th>{{ product.name }}({{ product.nav_total_unit }})</th>
+                                        {% endif %}
+                                      {% endfor %}
                                     {% endfor %}
                                     <th>Risk</th>
                                     <th>Spacing</th>
                                     <th>$/acre</th>
                                     <th>Acreage</th>
-                                    {% for product in products %}
-                                      <th>{{ product.name }}({{ product.prod_unit }})</th>
+                                    {% for prod in prods_date %}
+                                      {% for product in products %}
+                                        {% if product.id == prod.prod_id %}
+                                          <th>{{ product.name }}({{ product.prod_unit }})</th>
+                                        {% endif %}
+                                      {% endfor %}
                                     {% endfor %}
                                     <th>Wells</th>
                                     <th>($mm)</th>
@@ -201,6 +249,7 @@
                                 </tbody>
                               </table>
                               <button type="button" class="btn btn-info reserve-potential" id="unconventional-view">View</button>
+                              {% csrf_token %} 
                             </div>
                           </div>                        
                         </div>
@@ -345,7 +394,8 @@
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>       
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    {% csrf_token %}        
                   </div>
                 </div>
               </div>
@@ -371,29 +421,50 @@
                           <table class="table table-hover">
                             <tbody>
                               <tr>
-                                <td>Date</td>
-                                <td><div contenteditable>02/25/2016</div></td>
+                                <td></td>
                                 <td>
-                                  <select>
-                                    <option value="1" selected>Yes</option>
+                                  <div class="col-md-11 xdisplay_inputx form-group has-feedback">
+                                    <input type="text" class="form-control has-feedback-left equity-offering-date" id="single_cal2" aria-describedby="inputSuccess2Status3" value="{% if equity_offering_variables == None %}{% else %}{{equity_offering_variables.date|changeDate}}{% endif %}">
+                                    <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
+                                    <span id="inputSuccess2Status3" class="sr-only">(success)</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  <select id="equity-offering-choice">
+                                  {% if equity_offering_variables == None %}
+                                    <option value="1">Yes</option>
                                     <option value="0">No</option>
+                                  {% else %}
+                                    <option value="1" {% if equity_offering_variables.choice == 1 %}selected{% endif %}>Yes</option>
+                                    <option value="0" {% if equity_offering_variables.choice == 0 %}selected{% endif %}>No</option>
+                                  {% endif %}
                                   </select>
                                 </td>
                               </tr>
                               <tr>
                                 <td>Share amount</td>                                
                                 <td><div contenteditable>mm</div></td>
-                                <td><div contenteditable>29.0</div></td>
+                                <td><input type="text" name="equity-share-amount" class="reserve-potential-inputs" id="equity-share-amount" value="{% if equity_offering_variables == None %} {% else %} {{equity_offering_variables.share_amount|customRound}}{% endif %}"></td>
                               </tr>
                               <tr>
                                 <td>Shoe</td>                                
-                                <td><div contenteditable>15%</div></td>
-                                <td><div contenteditable>4.4</div></td> 
+                                <td>% <input type="text" name="equity-shoe" class="reserve-potential-inputs" id="equity-shoe" value="{% if equity_offering_variables == None %} {% else %} {{equity_offering_variables.shoe|customRound}}{% endif %}"></td>
+                                <td id="equity-shoe-calc">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.shoe|customRound}}
+                                  {% endif %}
+                                </td> 
                               </tr>
                               <tr>
                                 <td>Total shares issued</td>                                
                                 <td></td>             
-                                <td><div contenteditable>33.4</div></td> 
+                                <td id="total-shares-issued">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.total_shares_issued|customRound}}
+                                  {% endif %}
+                                </td> 
                               </tr>
                               <tr>
                                 <td></td>                                
@@ -403,17 +474,27 @@
                               <tr>
                                 <td>Last price</td>                                
                                 <td></td>             
-                                <td><div contenteditable>24.41</div></td> 
+                                <td>$ <input type="text" name="equity-last-price" class="reserve-potential-inputs" id="equity-last-price" value="{% if equity_offering_variables == None %} {% else %} {{equity_offering_variables.last_price|customRound}}{% endif %}"></td> 
                               </tr>
                               <tr>
                                 <td>Gross issue price</td>                                
-                                <td><div contenteditable>-5%</div></td>             
-                                <td><div contenteditable>33.4</div></td> 
+                                <td>% <input type="text" name="equity-gross-issue" class="reserve-potential-inputs" id="equity-gross-issue" value="{% if equity_offering_variables == None %} {% else %} {{equity_offering_variables.gross_issue|customRound}}{% endif %}"></td>             
+                                <td id="equity-gross-issue-calc">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.gross_issue_price|customRound}}
+                                  {% endif %}
+                                </td> 
                               </tr>
                               <tr>
                                 <td>Net issue price</td>                                
-                                <td><div contenteditable>-3.5%</div></td>             
-                                <td><div contenteditable>33.4</div></td> 
+                                <td>% <input type="text" name="equity-net-issue" class="reserve-potential-inputs" id="equity-net-issue" value="{% if equity_offering_variables == None %} {% else %} {{equity_offering_variables.net_issue|customRound}}{% endif %}"></td>             
+                                <td id="equity-net-issue-calc">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.net_issue_price|customRound}}
+                                  {% endif %}
+                                </td> 
                               </tr>
                               <tr>
                                 <td></td>                                
@@ -423,12 +504,22 @@
                               <tr>
                                 <td>Gross proceeds</td>                                
                                 <td></td>             
-                                <td>773</td> 
+                                <td id="gross-proceeds">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.gross_proceeds|customRound}}
+                                  {% endif %}
+                                </td> 
                               </tr>
                               <tr>
                                 <th>Net proceeds</th>                                
                                 <td></td>             
-                                <th>746</th> 
+                                <th id="net-proceeds">
+                                  {% if equity_offering_variables == None %}
+                                  {% else %}
+                                    {{equity_offering_dict.net_proceeds|customRound}}
+                                  {% endif %}
+                                </th> 
                               </tr>
                             </tbody>
                           </table>
@@ -438,7 +529,7 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info">Save changes</button>
+                    <button type="button" class="btn btn-info" id="equity-offering-send-data">Save changes</button>
                   </div>
                 </div>
               </div>
@@ -460,41 +551,89 @@
                   <div class="modal-body">
                     <div class="row">
                       <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="col-md-5 col-sm-5 col-xs-5">
                           <div class="x_title">
                             <h4>Sources</h4>
                           </div>
                           <div class="x_content">
-                            <table class="table">
+                            <table class="table" id="asset-acquisition-source-tbl">
                               <thead>
                                 <tr>
-                                  <th>Shares</th>                                  
-                                  <th><div contenteditable>23</div></th>
-                                  <th><div contenteditable>17.96</div></th>
-                                  <th id="cash">$412</th>
+                                  <td>Shares</td>                                  
+                                  <td>$&nbsp;
+                                    <input type="text" name="acquisition-source-shares-fst" class="inputs-style" id="acquisition-source-shares-fst" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.sources_share_fst|customRound}}{% endif %}">
+                                  </td>
+                                  <td>$&nbsp;
+                                    <input type="text" name="acquisition-source-shares-sec" class="inputs-style" id="acquisition-source-shares-sec" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.sources_share_sec|customRound}}{% endif %}">
+                                  </td>
+                                  <td id="acquisition-source-shares-total">
+                                    {% if asset_acqu_result == None %}  
+                                    {% else %}
+                                      $&nbsp;{{ asset_acqu_result.shares|customRound }}
+                                    {% endif %}
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <th>Cash</th>
-                                  <th></th>
-                                  <th></th>
-                                  <th id="sale-total">$187</th>
+                                  <td>Cash</td>
+                                  <td></td>
+                                  <td></td>
+                                  <td id="acquisition-source-cash">
+                                    {% if asset_acqu_result == None %}
+                                    {% else %}
+                                      $&nbsp;{{ asset_acqu_result.cash|customRound }}
+                                    {% endif %}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <th>Total</th>
                                   <th></th>
                                   <th></th>
-                                  <th id="sale-total">$600</th>
+                                  <th>
+                                    <input type="text" name="acquisition-source-total" class="inputs-style" id="acquisition-source-total" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.sources_share_total|customRound}}{% endif %}">&nbsp;$
+                                  </th>
                                 </tr>
                               </thead>
                             </table>
                           </div>
                         </div>
-                        <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="col-md-7 col-sm-7 col-xs-7">
                           <div class="x_title">
-                            <h4>Uses (Acquisition)</h4>
+                            <div class="row">
+                              <div class="col-sm-12 col-xs-12 col-md-12">
+                                <div class="col-sm-4">
+                                  <h4>Uses (Acquisition)</h4>
+                                </div>
+                                <div class="col-sm-8">
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td>
+                                          <div class="col-md-11 xdisplay_inputx form-group has-feedback">
+                                            <input type="text" class="form-control has-feedback-left asset-acquisition-date" id="single_cal3" aria-describedby="inputSuccess2Status3" value="{% if asset_acquisition_variables == None %}{% else %}{{asset_acquisition_variables.date|changeDate}}{% endif %}">
+                                            <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
+                                            <span id="inputSuccess2Status3" class="sr-only">(success)</span>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <select id="acquisition-uses-choice">
+                                          {% if asset_acquisition_variables == None %}
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                          {% else %}
+                                            <option value="1" {% if asset_acquisition_variables.choice == 1 %}selected{% endif %}>Yes</option>
+                                            <option value="0" {% if asset_acquisition_variables.choice == 0 %}selected{% endif %}>No</option>
+                                          {% endif %}
+                                          </select>
+                                        </td>                                        
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <div class="x_content">
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="asset-acquisition-uses-tbl">
                               <thead>
                                 <tr>
                                   <th>Play</th>
@@ -507,10 +646,18 @@
                               <tbody>
                                 <tr>
                                   <td>Name</td>
-                                  <td><div contenteditable>9400</div></td>
-                                  <td><div contenteditable>550</div></td>
-                                  <td><div contenteditable placeholder="$">5.5</div></td>
-                                  <td><div contenteditable>1100</div></td>
+                                  <td>
+                                    <input type="text" name="acquisition-uses-acres" class="inputs-style" id="acquisition-uses-acres" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_acres|customRound}}{% endif %}">
+                                  </td>
+                                  <td>
+                                    <input type="text" name="acquisition-uses-ip30" class="inputs-style" id="acquisition-uses-ip30" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_ip30|customRound}}{% endif %}">
+                                  </td>
+                                  <td>$&nbsp;
+                                    <input type="text" name="acquisition-uses-cost" class="inputs-style" id="acquisition-uses-cost" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_cost|customRound}}{% endif %}">
+                                  </td>
+                                  <td>
+                                    <input type="text" name="acquisition-uses-eur" class="inputs-style" id="acquisition-uses-eur" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_eur|customRound}}{% endif %}">
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -528,55 +675,139 @@
                                 <tr>
                                   <td>EUR Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>1</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="acquisition-uses-eur-{{ product.id }}" class="inputs-style acquisition-uses-eur" data-id="{{ product.id }}" value="{{ element.eur_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% else %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id="{{ product.id }}" id="acquisition-uses-eur-other">{{ element.eur_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="acquisition-uses-eur-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Production Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>2</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="acquisition-uses-mix-{{ product.id }}" class="inputs-style acquisition-uses-mix" data-id="{{ product.id }}" value="{{ element.prod_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% else %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id="{{ product.id }}" id="acquisition-uses-mix">{{ element.prod_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="acquisition-uses-mix-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Production (Mboepd)</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>3</div></td>
+                                    <td data-id="{{ product.id }}" class="acquisition-uses-mboepd">
+                                    {% if asset_acqu_result == None %}
+                                    {% else %}
+                                      {% for k, v in asset_acqu_result.prod_mix.items %}
+                                        {% if product.id == k %}
+                                          {{ v|customRound }}
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% endif %}
+                                    </td>
                                   {% endfor %}
+                                  <td>
+                                    <input type="text" class="inputs-style" name="acquisition-uses-mboepd-total" id="acquisition-uses-mboepd-total" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_prod|customRound}}{% endif %}">
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td>Proved Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>4</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="acquisition-uses-proved-mix-{{ product.id }}" class="inputs-style acquisition-uses-proved-mix" data-id="{{ product.id }}" value="{{ element.proved_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% else %}
+                                      {% for element in asset_acquisition_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id='{{ product.id }}' id="acquisition-uses-proved-mix">{{ element.proved_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="acquisition-uses-proved-mix-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Proved (Mmboe)</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>5</div></td>
+                                    <td data-id="{{product.id}}" class="acquisition-uses-proved-mmboe">
+                                      {% if asset_acqu_result == None %}
+                                      {% else %}
+                                        {% for k, v in asset_acqu_result.proved_mix.items %}
+                                        {% if product.id == k %}
+                                          {{ v|customRound }}
+                                        {% endif %}
+                                        {% endfor %}
+                                      {% endif %}
+                                    </td>
                                   {% endfor %}
+                                  <td>
+                                    <input type="text" class="inputs-style" name="acquisition-uses-proved-mmboe-total" id="acquisition-uses-proved-mmboe-total" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_proved|customRound}}{% endif %}">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                </tr>
+                                <tr>
+                                  <td>F&D ($/Mcfe)</td>
+                                  <td>
+                                    <input type="text" class="inputs-style" name="acquisition-uses-f-d" id="acquisition-uses-f-d" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_f_d|customRound}}{% endif %}">
+                                  </td>
+                                  <td>PUD %</td>
+                                  <td>
+                                    <input type="text" class="inputs-style" name="acquisition-uses-pud" id="acquisition-uses-pud" value="{% if asset_acquisition_variables == None %} {% else %} {{asset_acquisition_variables.uses_pud|customRound}}{% endif %}">&nbsp;%
+                                  </td>
+                                  <td></td>
                                 </tr>
                               </tbody>
-                            </table>                            
-                            <div class="row">
-                              <div class="col-md-12 col-sm-12 col-xs-12">
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <div class="input-group input-group-sm">
-                                    <label class="input-group-addon">F&D ($/Mcfe)</label>
-                                    <input type="text" class="form-control variable-set-dollar">
-                                  </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <div class="input-group input-group-sm">
-                                    <label class="input-group-addon">PUD %</label>
-                                    <input type="text" class="form-control variable-set-dollar">
-                                  </div>
-                                </div>
-                                <div class="input-group input-group-sm">
-                                  <label class="input-group-addon">Total</label>
-                                  <input type="text" class="form-control variable-set-dollar">
-                                </div>
-                              </div>
-                            </div>
+                              <tfoot>
+                                <tr>
+                                  <th>Total</th>
+                                  <th></th>
+                                  <th></th>
+                                  <th></th>
+                                  <th id="acquisition-uses-total">
+                                    {% if asset_acqu_result == None %}
+                                    {% else %}
+                                      $&nbsp;{{ asset_acqu_result.total }}
+                                    {% endif %}
+                                  </th>
+                                </tr>
+                              </tfoot>
+                            </table>
                           </div>
                         </div>
                       </div>
@@ -584,7 +815,8 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info">Save changes</button>
+                    <button type="button" class="btn btn-info" id="asset-acquisition-send-data">Save changes</button>
+                    {% csrf_token %}
                   </div>
                 </div>
               </div>
@@ -606,9 +838,41 @@
                   <div class="modal-body">
                     <div class="row">
                       <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="col-md-8 col-sm-8 col-xs-8">
                           <div class="x_title">
-                            <h4>Sources</h4>
+                            <div class="row">
+                              <div class="col-sm-12 col-xs-12 col-md-12">
+                                <div class="col-sm-4">
+                                  <h4>Sources</h4>
+                                </div>
+                                <div class="col-sm-8">
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td>
+                                          <div class="col-md-11 xdisplay_inputx form-group has-feedback">
+                                            <input type="text" class="form-control has-feedback-left asset-sale-date" id="single_cal4" aria-describedby="inputSuccess2Status2" value="{% if asset_sale_variables == None %}{% else %}{{asset_sale_variables.date|changeDate}}{% endif %}">
+                                            <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
+                                            <span id="inputSuccess2Status2" class="sr-only">(success)</span>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <select id="sale-uses-choice">
+                                          {% if asset_sale_variables == None %}
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                          {% else %}
+                                            <option value="1" {% if asset_sale_variables.choice == 1 %}selected{% endif %}>Yes</option>
+                                            <option value="0" {% if asset_sale_variables.choice == 0 %}selected{% endif %}>No</option>
+                                          {% endif %}
+                                          </select>
+                                        </td>                                        
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>                            
                           </div>
                           <div class="x_content">
                             <table class="table table-hover">
@@ -624,10 +888,18 @@
                               <tbody>
                                 <tr>
                                   <td>Name</td>
-                                  <td><div contenteditable>9400</div></td>
-                                  <td><div contenteditable>550</div></td>
-                                  <td><div contenteditable placeholder="$">5.5</div></td>
-                                  <td><div contenteditable>1100</div></td>
+                                  <td>
+                                    <input type="text" name="sale-sources-acres" class="inputs-style" id="sale-sources-acres" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_acres|customRound}}{% endif %}">
+                                  </td>
+                                  <td>
+                                    <input type="text" name="sale-sources-ip30" class="inputs-style" id="sale-sources-ip30" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_ip30|customRound}}{% endif %}">
+                                  </td>
+                                  <td>$&nbsp;
+                                    <input type="text" name="sale-sources-cost" class="inputs-style" id="sale-sources-cost" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_cost|customRound}}{% endif %}">
+                                  </td>
+                                  <td>
+                                    <input type="text" name="sale-sources-eur" class="inputs-style" id="sale-sources-eur" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_eur|customRound}}{% endif %}">
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -645,58 +917,139 @@
                                 <tr>
                                   <td>EUR Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>1</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="sale-sources-eur-{{ product.id }}" class="inputs-style sale-sources-eur" data-id="{{ product.id }}" value="{{ element.eur_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% else %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id="{{ product.id }}" id="sale-sources-eur-other">{{ element.eur_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="sale-sources-eur-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Production Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>2</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="sale-sources-mix-{{ product.id }}" class="inputs-style sale-sources-mix" data-id="{{ product.id }}" value="{{ element.prod_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% else %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id="{{ product.id }}" id="sale-sources-prod-mix-other">{{ element.prod_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="sale-sources-mix-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Production (Mboepd)</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>3</div></td>
+                                    <td data-id="{{ product.id }}" class="sale-sources-mboepd">
+                                    {% if asset_sale_calc_result == None %}
+                                    {% else %}
+                                      {% for k, v in asset_sale_calc_result.prod_mix.items %}
+                                        {% if product.id == k %}
+                                          {{ v|customRound }}
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% endif %}
+                                    </td>
                                   {% endfor %}
+                                  <td>
+                                    <input type="text" class="inputs-style" name="sale-sources-mboepd-total" id="sale-sources-mboepd-total" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_prod|customRound}}{% endif %}">
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td>Proved Mix</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>4</div></td>
+                                    {% if product.id != 3 %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td>
+                                            <input type="text" name="sale-sources-proved-mix-{{ product.id }}" class="inputs-style sale-sources-proved-mix" data-id="{{ product.id }}" value="{{ element.proved_mix }}">
+                                            &nbsp;%
+                                          </td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% else %}
+                                      {% for element in asset_sale_prod %}
+                                        {% if product.id == element.prod_id %}
+                                          <td data-id='{{ product.id }}' id="sale-sources-proved-mix">{{ element.proved_mix }}&nbsp;%</td>
+                                        {% endif %}
+                                      {% endfor %}                                      
+                                    {% endif %}
                                   {% endfor %}
+                                  <td id="sale-sources-proved-mix-total">100&nbsp;%</td>
                                 </tr>
                                 <tr>
                                   <td>Proved (Mmboe)</td>
                                   {% for product in products %}
-                                    <td data-id="product.id"><div contenteditable>5</div></td>
+                                    <td data-id="{{product.id}}" class="sale-sources-proved-mmboe">
+                                      {% if asset_sale_calc_result == None %}
+                                      {% else %}
+                                        {% for k, v in asset_sale_calc_result.proved_mix.items %}
+                                          {% if product.id == k %}
+                                            {{ v|customRound }}
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endif %}
+                                    </td>
                                   {% endfor %}
+                                  <td>
+                                    <input type="text" class="inputs-style" name="sale-sources-proved-mmboe-total" id="sale-sources-proved-mmboe-total" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_proved|customRound}}{% endif %}">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                </tr>
+                                <tr>
+                                  <td>F&D ($/Mcfe)</td>
+                                  <td>
+                                    <input type="text" class="inputs-style" name="sale-sources-f-d" id="sale-sources-f-d" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_f_d|customRound}}{% endif %}">
+                                  </td>
+                                  <td>PUD %</td>
+                                  <td>
+                                    <input type="text" class="inputs-style" name="sale-sources-pud" id="sale-sources-pud" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_pud|customRound}}{% endif %}">&nbsp;%
+                                  </td>
+                                  <td></td>
                                 </tr>
                               </tbody>
-                            </table>                            
-                            <div class="row">
-                              <div class="col-md-12 col-sm-12 col-xs-12">
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <div class="input-group input-group-sm">
-                                    <label class="input-group-addon">F&D ($/Mcfe)</label>
-                                    <input type="text" class="form-control variable-set-dollar">
-                                  </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <div class="input-group input-group-sm">
-                                    <label class="input-group-addon">PUD %</label>
-                                    <input type="text" class="form-control variable-set-dollar">
-                                  </div>
-                                </div>
-                                <div class="input-group input-group-sm">
-                                  <label class="input-group-addon">Total</label>
-                                  <input type="text" class="form-control variable-set-dollar">
-                                </div>
-                              </div>
-                            </div>
+                              <tfoot>
+                                <tr>
+                                  <th>Total</th>
+                                  <th></th>
+                                  <th></th>
+                                  <th></th>
+                                  <th>$&nbsp;
+                                    <input type="text" name="sale-sources-total" class="inputs-style" id="sale-sources-total" value="{% if asset_sale_variables == None %} {% else %} {{asset_sale_variables.sources_total|customRound}}{% endif %}">
+                                  </th>
+                                </tr>
+                              </tfoot>
+                            </table>
                           </div>
                         </div>
-                        <div class="col-md-3 col-sm-3 col-xs-3">
+                        <div class="col-md-4 col-sm-4 col-xs-4">
                           <div class="x_title">
                             <h4>Uses (Acquisition)</h4>
                           </div>
@@ -704,16 +1057,25 @@
                             <table class="table">
                               <thead>
                                 <tr>
-                                  <th>Cash</th>
-                                  <th id="cash">$600</th>
+                                  <td>Cash</td>
+                                  <td id="sale-uses-total">$&nbsp;
+                                    {% if asset_sale_variables == None %}
+                                    {% else %}
+                                      {{asset_sale_variables.sources_total|customRound}}
+                                    {% endif %}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <th>Total</th>
-                                  <th id="sale-total">$600</th>
+                                  <th id="sale-uses-cash-total">$&nbsp;
+                                    {% if asset_sale_variables == None %}
+                                    {% else %}
+                                      {{asset_sale_variables.sources_total|customRound}}
+                                    {% endif %}
+                                  </th>
                                 </tr>
                               </thead>
                             </table>
-
                           </div>
                         </div>
                       </div>
@@ -721,7 +1083,8 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info">Save changes</button>
+                    {% csrf_token %} 
+                    <button type="button" class="btn btn-info" id="asset-sale-send-data">Save changes</button>
                   </div>
                 </div>
               </div>

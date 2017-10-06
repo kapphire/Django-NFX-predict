@@ -124,3 +124,29 @@ div #add-play-conventional-input {
   border: 2px dashed lightgreen;
   border-radius: 4px;
 }
+
+.inputs-style{
+  width: 50px;
+  border: 2px dashed lightgreen;
+  border-radius: 4px;
+}
+
+.btn-lg{
+  width: 220px;
+}
+
+#single_cal1 {
+  width: 160px;
+}
+
+#single_cal2 {
+  width: 160px;
+}
+
+#single_cal3 {
+  width: 160px;
+}
+
+#single_cal4 {
+  width: 160px;
+}

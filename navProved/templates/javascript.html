@@ -34,18 +34,18 @@
 <script src="{% static 'js/jquery.cookie.min.js' %}"></script>
 
 <script type="text/javascript">
-		var csrftoken = $.cookie('csrftoken');
-		function csrfSafeMethod(method){
-			return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-		}
-		$.ajaxSetup({
-			beforeSend: function(xhr, settings){
-				if (!csrfSafeMethod(settings.type) && !this.crossDomain){
-					xhr.setRequestHeader("X-CSRFToken", csrftoken);
-				}
+	var csrftoken = $.cookie('csrftoken');
+	function csrfSafeMethod(method){
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings){
+			if (!csrfSafeMethod(settings.type) && !this.crossDomain){
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
 			}
-		});
-	</script>
+		}
+	});
+</script>
 <!-- Custom Theme Scripts -->
 <script type="text/javascript" src="{% static 'js/customjs/navProved.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/customjs/typeCurve.js' %}"></script>
