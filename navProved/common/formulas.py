@@ -1,3 +1,4 @@
+from __future__ import division
 import math
 
 
@@ -218,7 +219,33 @@ class NavProved(object):
 
 			tbl_sample_dict.append(tbl_sample_dict_row)
 			tbl_data.append(table_row)
+			self.tbl_sample_dict = tbl_sample_dict
+
 		return tbl_data
+
+
+	def get_sum_result(self):
+		net_value = {}
+		for individual in self.tbl_sample_dict:
+			for key, value in individual.items():
+				if type(value) is dict:
+					if net_value.get(key) is None:
+						net_value[key] = 0
+					for prod_key, pred in value.items():
+						if prod_key == 'pred':
+							net_value[key] += pred
+				else:
+					if net_value.get(key) is None:
+						net_value[key] = 0
+					net_value[key] += value
+		net_value['pv_boe'] = net_value['pv'] * 6 / net_value['total']
+		net_value['pv_mcfe'] = net_value['pv'] / net_value['total']
+		return net_value
+
+
 
 if __name__ == "__main__":
 	temp = NavProved()
+
+
+# {'cfo': 7046.415350049809, 2: 1366.0000073877554, 3: 95.04998872337313, 'pv': 3203.171300359004, 1: 185.03291277957672, 'operating_income': -661.22311345599, 'capex': 1993.0, 'net_revenue': 14280.616640438278, 'tax': -2.5361469623997515, 'prod_taxes': 528.1651591057528, 'fcf': 5055.951497012208, 'disc_factor': 6.288388787148257, 'operating_costs_mm': 6706.036131282718, 'dda': 7707.638463505798, 'total': 3046.4974164054543, 'operating_costs_mcfe': 19.817419128038335}

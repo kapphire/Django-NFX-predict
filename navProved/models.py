@@ -57,9 +57,8 @@ class DeclineRate(models.Model):
 
 class NavProvedResult(models.Model):
 	ticker = models.ForeignKey(Ticker, related_name = 'navProvedResults')
-	pv = models.FloatField()
-	pv_boe = models.FloatField()
-	pv_mcfe = models.FloatField()
+	name = models.CharField(max_length = 100)
+	value = models.FloatField()
 
 
 class ProductionTotal(models.Model):

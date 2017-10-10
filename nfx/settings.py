@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'navProved',
     'typeCurves',
     'navTotal',
+    'landing',
 )
 
 MIDDLEWARE_CLASSES = (

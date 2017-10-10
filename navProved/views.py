@@ -61,6 +61,20 @@ def getNavProvedTableData(start, end, ticker_id = 1):
 
 	table_data = navProved.initialize_prices(sum_param)
 
+	sum_result = navProved.get_sum_result()
+
+	sum_result_tbl = NavProvedResult.objects.filter(ticker_id = ticker_id).all()
+	
+	if not sum_result_tbl:
+		for key, value in sum_result.items():
+			insert_table = NavProvedResult(name = key, value = value, ticker_id = ticker_id)
+			insert_table.save()
+	else:
+		for key, value in sum_result.items():
+			sum_result_update = NavProvedResult.objects.filter(ticker_id = ticker_id, name = key).get()
+			sum_result_update.value = value
+			sum_result_update.save()
+
 	return {
 		'table_data': table_data,
 		'decline_rates': decline_rates

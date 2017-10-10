@@ -1,3 +1,5 @@
+from __future__ import division
+
 class AssetSale(object):
 	def __init__(self, params):
 		self.date = params['sale_date']

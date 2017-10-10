@@ -29,6 +29,31 @@ class TotalAddPlayUnconv(models.Model):
 	wells = models.FloatField()
 
 
+class TotalAddPlayConv(models.Model):
+	ticker = models.ForeignKey(Ticker, related_name = 'total_conv_tickers')
+	play = models.ForeignKey(Play, related_name = 'total_conv_plays')
+	lst_hc = models.IntegerField()
+	flat = models.FloatField()
+	lst_prod = models.FloatField()
+	dev_cost = models.FloatField()
+	wl = models.FloatField()
+	operator = models.CharField(max_length = 100)
+	royalty = models.FloatField()
+	trap = models.FloatField()
+	reservoir = models.FloatField()
+	seal = models.FloatField()
+	timing = models.FloatField()
+	commercial = models.FloatField()
+	closure = models.FloatField()
+	drainage = models.FloatField()
+	mean = models.FloatField()
+	boe_feet = models.FloatField()
+	oil_conv = models.FloatField()
+	gas_conv = models.FloatField()
+	risk_conv = models.FloatField()
+	proved_book = models.IntegerField()
+
+
 class TotalEquityOffering(models.Model):
 	ticker = models.ForeignKey(Ticker, related_name = 'total_equity_tickers')
 	play = models.ForeignKey(Play, related_name = 'total_equity_plays')
@@ -91,3 +116,22 @@ class TotalAssetSale(models.Model):
 	sources_pud = models.FloatField()
 	choice = models.IntegerField()
 	date = models.DateField(default = date.today)
+
+
+class TotalNetLandingChange(models.Model):
+	ticker = models.ForeignKey(Ticker, related_name = 'total_net_landing_tickers')
+	play = models.ForeignKey(Play, related_name = 'total_net_landing_plays')
+	sale_proceeds_s = models.FloatField()
+	sale_carries_s = models.FloatField()
+	equity_s = models.FloatField()
+	monies_s = models.FloatField()
+	carries_s = models.FloatField()
+
+
+class TotalLandingResults(models.Model):
+	ticker = models.ForeignKey(Ticker, related_name = 'results_tickers')
+	play = models.ForeignKey(Play, related_name = 'results_plays')
+	debt = models.FloatField()
+	equivalents = models.FloatField()
+	deficit = models.FloatField()
+	hedge = models.FloatField()

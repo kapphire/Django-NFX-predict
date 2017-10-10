@@ -1,3 +1,4 @@
+from __future__ import division
 import math
 import numpy
 
@@ -7,7 +8,6 @@ class TypeCurveStatic(object):
 	def __init__(self, param):
 		self.years = param['years']
 		self.ticker_id = param['ticker_id']
-		self.ticker = param['ticker']
 		self.products = param['products']
 		self.prices = param['prices']
 		self.names = param['play_names']

@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^navProved/', include('navProved.urls')),
     url(r'^typeCurve/', include('typeCurves.urls')),
     url(r'^navTotal/', include('navTotal.urls')),
+    url(r'^$', include('landing.urls'))
 ]

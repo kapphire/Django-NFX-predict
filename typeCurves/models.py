@@ -30,14 +30,6 @@ class PlayCommonInputClass(models.Model):
 	value = models.FloatField()
 
 
-# class PlayCommonInputClassOther(models.Model):
-# 	play = models.ForeignKey(Play, related_name = 'PlayCommonInputClassOther')
-# 	ticker = models.ForeignKey(Ticker, related_name = 'PlayCommonInputClassOther')
-# 	name = models.CharField(max_length = 250)
-# 	unit = models.CharField(max_length = 250)
-# 	value = models.FloatField()
-
-
 class PlayProdDecline(models.Model):
 	ticker = models.ForeignKey(Ticker, related_name = 'playProdDeclines')
 	play = models.ForeignKey(Play, related_name = 'playProdDeclines')

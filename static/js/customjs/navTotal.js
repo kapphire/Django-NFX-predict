@@ -26,52 +26,6 @@ let NavTotal = (() => {
 		return parseFloat(Math.round(val * 100) / 100)
 	}
 
-	// const drawDataTable = (response) => {
-	// 	window.navProvedTable.rows().remove().draw();
-	// 	window.footerData = []
-	// 	let rows = response.table_data
-	// 	for (let i = 0; i < rows.length; i ++) {
-	// 		let row = [rows[i][0]]
-	// 		for (let j = 1; j < rows[i].length; j ++) {
-	// 			row.push(get2DigitNumber(rows[i][j]))
-	// 		}
-
-			
-	// 		for (let j = 1; j < rows[i].length; j++) {
-	// 			if (!window.footerData[j]) {
-	// 				window.footerData[j] = 0
-	// 			}
-	// 			window.footerData[j] += parseFloat(rows[i][j])
-	// 		}
-
-	// 		window.navProvedTable.row.add(row).draw();
-	// 	}
-	// 	$("#pv").text('$ ' + get2DigitNumber(footerData[footerData.length - 1]));
-	// 	$("#pv_1").text('$ ' + get2DigitNumber(footerData[footerData.length - 1] * 6 / footerData[footerData.length - 13]));
-	// 	$("#pv_2").text('$ ' + get2DigitNumber(footerData[footerData.length - 1] / footerData[footerData.length - 13]));
-
-	// 	let declineRates = response.decline_rates;
-	// 	for (key in declineRates) {
-	// 		$(`input.decline-rate[data-prod-id=${key}]`).val(get2DigitNumber(declineRates[key]) + " %")
-	// 	}
-	// }
-
-	const navTotal = (acre_unconv, risk_unconv, spacing, zone, zone_pros, rigs, days_to, drilled) => {
-		sendRequest("navTotalAjax/",
-		{
-			"acre_unconv" : acre_unconv, 
-			"risk_unconv" : risk_unconv,
-			"spacing" : spacing,
-			"zone" : zone,
-			"zone_pros" :zone_pros,
-			"rigs" : rigs,
-			"days_to" : days_to,
-			"drilled" : drilled
-		}, (response) => {
-			console.log("success")
-		});
-	}
-
 	const navTotalInitVariables = (total_net_asset_value, total_inflation, total_rig, total_duration, total_year_define, total_boe_mcfe, date) => {
 		sendRequest("navTotalInitVariables/",
 		{
@@ -84,6 +38,8 @@ let NavTotal = (() => {
 			"date" : date,
 		}, (response) => {
 			alert("Successfully changed...")
+			$('#total-ngl-percent').html(get2DigitNumber(response.init_data.wti) + '&nbsp;%')
+			$('#total-r').html(get2DigitNumber(response.init_data.r))
 		});
 	}
 
@@ -104,7 +60,10 @@ let NavTotal = (() => {
 			$('#equity-net-issue-calc').html('$&nbsp;' + get2DigitNumber(response.tbl_dict.net_issue_price));
 			$('#gross-proceeds').html(get2DigitNumber(response.tbl_dict.gross_proceeds));
 			$('#net-proceeds').html(get2DigitNumber(response.tbl_dict.net_proceeds));
-			
+			$('#shares_out').html(response.shares_out);
+			window.footerData = response.proved_reserves
+			window.provedReserve.rows().remove().draw();
+			window.provedReserve.row.add(response.proved_reserves).draw();
 		});
 	}
 
@@ -149,14 +108,18 @@ let NavTotal = (() => {
 				    }
 				});
 			});
-			console.log(response.acqu_data.other_eur_mix)
+			
 			$('#acquisition-uses-eur-other').html(get2DigitNumber(response.acqu_data.other_eur_mix) + '&nbsp;%');
 			$('#acquisition-uses-mix').html(get2DigitNumber(response.acqu_data.other_prod_mix) + '&nbsp;%');			
 			$('#acquisition-uses-proved-mix').html(get2DigitNumber(response.acqu_data.other_proved_mix) + '&nbsp;%');
+			$('#shares_out').html(response.shares_out)
+			window.footerData = response.proved_reserves
+			window.provedReserve.rows().remove().draw();
+			window.provedReserve.row.add(response.proved_reserves).draw();
 		});
 	}
 
-	// Asset Sale
+	// ================================= Asset Sale ===================================================
 	const navTotalAssetSale = (sale_date, sale_uses_choice,	sale_sources_total,	sale_src_acres, sale_src_ip30, sale_src_cost, sale_src_eur,	sale_src_mboepd_total, sale_src_proved_mmboe_total, sale_src_f_d, sale_src_pud,	sale_src_eur_mix, sale_src_mix,	sale_src_proved_mix) => {
 		sendRequest('navTotalAssetSale/',
 		{
@@ -200,6 +163,121 @@ let NavTotal = (() => {
 				});
 			});
 		});
+	}
+
+	// ================================= NavTotal NET Lading --===========================================
+	const navTotalNetLanding = (sale_proceeds_s, sale_carries_s, equity_s, monies_s, carries_s) => {
+		sendRequest('navTotalNetLanding/', {
+			'sale_proceeds_s' : sale_proceeds_s,
+			'sale_carries_s' : sale_carries_s,
+			'equity_s' : equity_s,
+			'monies_s' : monies_s,
+			'carries_s' : carries_s,
+		}, (response) => {
+			$('#sale-proceeds-mm').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_proceeds_p))
+			$('#sale-proceeds-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_proceeds_xp))
+			$('#sale-carries-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_carries_xp))
+			$('#equity-mm').html('$&nbsp;' + get2DigitNumber(response.net_landing.equity_p))
+			$('#equity-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.equity_xp))
+			$('#carries-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.carries_xp))
+			$('#monies-mm').html('$&nbsp;' + get2DigitNumber(response.net_landing.monies_p))
+			$('#monies-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.monies_xp))
+			$('#sale-net').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_net))
+			$('#purchase-net').html('$&nbsp;' + get2DigitNumber(response.net_landing.purchase_net))
+			window.otherAssetFooterData = response.other_asset
+			window.totalProved.rows().remove().draw();
+			window.totalProved.row.add(response.other_asset).draw();
+		})
+	}
+	
+	// ================================= NavTotal Lading Results ===========================================
+	const navTotalLandingResult = (landing_debt, landing_equivalents, landing_deficit, landing_hedge) => {
+		sendRequest('navTotalLandingResults/', {
+			'debt' : landing_debt,
+			'equivalents' : landing_equivalents,
+			'deficit' : landing_deficit,
+			'hedge' : landing_hedge,
+		}, (response) => {
+			$('#share-debt').html('$&nbsp;' + get2DigitNumber(response.calc_results.debt))
+			$('#share-equivalents').html('$&nbsp;' + get2DigitNumber(response.calc_results.equivalents))
+			$('#share-deficit').html('$&nbsp;' + get2DigitNumber(response.calc_results.deficit))
+			$('#share-hedge').html('$&nbsp;' + get2DigitNumber(response.calc_results.hedge))
+			$('#total-mm-liabilities').html('$&nbsp;' + get2DigitNumber(response.calc_results.total_mm_liabilities))
+			$('#total-share-liabilities').html('$&nbsp;' + get2DigitNumber(response.calc_results.total_share_liabilities))
+			$('#proven-net-mm').html('$&nbsp;' + get2DigitNumber(response.calc_results.proven_net_mm))
+			$('#proven-net-share').html('$&nbsp;' + get2DigitNumber(response.calc_results.proven_net_share))
+		})
+	}
+
+	// ================================= NavTotal Unconventional ===========================================
+	const navTotalUnconventional = (acre_unconv, risk_unconv, spacing, zone, zone_pros, rigs, days_to, drilled) => {
+		sendRequest('navTotalUnconventional/', {
+			'acre_unconv' : acre_unconv,
+			'risk_unconv' : risk_unconv,
+			'spacing' : spacing,
+			'zone' : zone,
+			'zone_pros' : zone_pros,
+			'rigs' : rigs,
+			'days_to' : days_to,
+			'drilled' : drilled
+		}, (response) => {
+			row = []
+			window.unconventionalFooterData = response.calc_result['array']
+			window.addPlayUnconventional.rows().remove().draw();
+			for (let i = 0; i < response.calc_result['array'].length; i ++) {
+				row.push(get2DigitNumber(response.calc_result['array'][i]))
+			}
+			window.addPlayUnconventional.row.add(row).draw();
+			$('.net_resource').each(function (i, obj) {
+				let data_id = parseInt($(this).attr('data-id'));
+				$(this).html(get2DigitNumber(response.calc_result['dict'][data_id]))
+			});
+			console.log(response.calc_result['dict'])
+			$('#unconventional-acre').html('$&nbsp;' + get2DigitNumber(response.calc_result['dict']['acre']) + '/acre');
+			$('#unconventional-acreage').html(get2DigitNumber(response.calc_result['dict']['acerage']));
+			$('#unconventional-wells').html(get2DigitNumber(response.calc_result['dict']['wells']));
+			$('#unconventional-well-cost').html('$&nbsp;' + get2DigitNumber(response.calc_result['dict']['well_cost']));
+			$('#unconventional-pv10').html('$&nbsp;' + get2DigitNumber(response.calc_result['dict']['well_pv_ten']));
+			$('#unconventional-pv-boe').html('$&nbsp;' + get2DigitNumber(response.calc_result['dict']['well_pv_eur']));
+			$('#unconventional-irr').html(get2DigitNumber(response.calc_result['dict']['irr']) + '&nbsp;%');
+			$('#unconventional-wells-yr').html(get2DigitNumber(response.calc_result['dict']['wells_yr']));
+			$('#unconventional-years').html(get2DigitNumber(response.calc_result['dict']['years_unconv']));
+			$('#unconventional-m-a').html(get2DigitNumber(response.calc_result['dict']['m_a']));
+		})
+	}
+
+	// ================================ NAV Total Conventional ===========================================
+	const navTotalConventional = (lst_hc, flat, lst_prod, dev_cost, wl, operator, royalty, trap, reservoir, seal, timing, commercial, closure, drainage, mean, boe_feet, oil_conv, gas_conv, risk_conv, proved_book) => {
+		sendRequest('navTotalConventional/', {
+			'lst_hc' : lst_hc,
+			'flat' : flat,
+			'lst_prod' : lst_prod,
+			'dev_cost' : dev_cost,
+			'wl' : wl,
+			'operator' : operator,
+			'royalty' : royalty,
+			'trap' : trap,
+			'reservoir' : reservoir,
+			'seal' : seal,
+			'timing' : timing,
+			'commercial' : commercial,
+			'closure' : closure,
+			'drainage' : drainage,
+			'mean' : mean,
+			'boe_feet' : boe_feet,
+			'oil_conv' : oil_conv,
+			'gas_conv' : gas_conv,
+			'risk_conv' : risk_conv,
+			'proved_book' : proved_book,
+		}, (response) => {
+			row = []
+			window.conventionalFooterData = response.calc_result['array']
+			window.addPlayConventional.rows().remove().draw();
+			for (let i = 0; i < response.calc_result['array'].length; i ++) {
+				row.push(get2DigitNumber(response.calc_result['array'][i]))
+			}
+			window.addPlayConventional.row.add(row).draw();
+		})
 	}
 
 	const init = () => {
@@ -274,7 +352,7 @@ let NavTotal = (() => {
 				acqu_uses_eur_mix = {};
 				acqu_uses_mix = {};
 				acqu_uses_proved_mix = {};
-			console.log(acqu_uses_mboepd_total)
+
 			$('.acquisition-uses-eur').each(function(i, obj) {
 			    let tag_name = $(this).prop('tagName').toLowerCase();
 			    let data_id = parseInt($(this).attr('data-id'));
@@ -319,7 +397,7 @@ let NavTotal = (() => {
 			)		
 		})
 
-		// Asset Sale
+		// ================================ Asset Sale ===================================================
 		.on('click', '#asset-sale-send-data', (event) => {
 			let sale_date = $('.asset-sale-date').val(),
 				sale_uses_choice = $('#sale-uses-choice').val(),
@@ -377,7 +455,48 @@ let NavTotal = (() => {
 				JSON.stringify(sale_src_mix),
 				JSON.stringify(sale_src_proved_mix),
 			)		
-		})		
+		})
+
+		// ======================================== Change P(s) ============================================
+		.on("click", "#landing-net-change-btn", (event) => {
+			let sale_proceeds_s = $('#sale-proceeds-s').val(),
+				sale_carries_s = $('#sale-carries-s').val(),
+				equity_s = $('#equity-s').val(),
+				monies_s = $('#monies-s').val(),
+				carries_s = $('#carries-s').val();
+
+			if (sale_proceeds_s == "" || sale_carries_s == "" || equity_s == "" || monies_s == "" || carries_s == "") {
+				alert("please fill in the all inputs.")
+			}
+
+			navTotalNetLanding(
+					sale_proceeds_s,
+					sale_carries_s,
+					equity_s,
+					monies_s,
+					carries_s
+				)
+		})
+
+		// ==================================== Landing Results =========================================
+		.on("click", "#landing-results-btn", (event) => {
+			let landing_debt = $('#landing-debt').val(),
+				landing_equivalents = $('#landing-equivalents').val(),
+				landing_deficit = $('#landing-deficit').val(),
+				landing_hedge = $('#landing-hedge').val();
+
+			if (landing_debt == "" || landing_equivalents == "" || landing_deficit == "") {
+				alert("please fill in the all inputs.")
+			}
+
+			navTotalLandingResult(
+					landing_debt,
+					landing_equivalents,
+					landing_deficit,
+					landing_hedge
+				)
+
+		})
 
 		.on("click", "#unconventional-toggle", (event) => {
 			unconventional_state = $("#unconventional-toggle").attr("class");
@@ -397,7 +516,7 @@ let NavTotal = (() => {
 			};
 		})
 
-
+		// ==================================== Unconventional =========================================
 		.on("click", "#unconventional-view", (event) => {
 			let acre_unconv = $("#acre-unconv").val();
 			let risk_unconv = $("#risk-unconv").val();
@@ -411,46 +530,91 @@ let NavTotal = (() => {
 			if (acre_unconv == "" || risk_unconv == "" || spacing == "" || zone == "" || zone_pros == "" || rigs == "" || days_to == "" || drilled == "") {
 				alert("please fill in the all inputs.")
 			}
-
-			navTotal(acre_unconv, risk_unconv, spacing, zone, zone_pros, rigs, days_to, drilled);
+			navTotalUnconventional(
+					acre_unconv, 
+					risk_unconv, 
+					spacing,
+					zone, 
+					zone_pros, 
+					rigs, 
+					days_to, 
+					drilled
+				);
 		})
-		// .on("change", "input.initial_production", (event) => {
-		// 	let id = event.target.getAttribute("data-id"),
-		// 		value = event.target.value;
 
-		// 	let dateRangeEls = document.getElementsByClassName("date-range");
-		// 	let start = dateRangeEls[0].value;
-		// 	let end = dateRangeEls[1].value;
-		// 	let drawFlag = true
+		// ==================================== Conventional =========================================
+		.on('click', '#conventional-view', (event) => {
+			let lst_hc = $('#lst-hc').val(),
+				flat = $('#flat').val(),
+				lst_prod = $('#lst-prod').val(),
+				dev_cost = $('#dev-cost').val(),
+				wl = $('#wl').val(),
+				operator = $('#operator').val(),
+				royalty = $('#royalty').val(),
+				trap = $('#trap').val(),
+				reservoir = $('#reservoir').val(),
+				seal = $('#seal').val(),
+				timing = $('#timing').val(),
+				commercial = $('#commercial').val(),
+				closure = $('#closure').val(),
+				drainage = $('#drainage').val(),
+				mean = $('#mean').val(),
+				boe_feet = $('#boe-feet').val(),
+				oil_conv = $('#oil-conv').val(),
+				gas_conv = $('#gas-conv').val(),
+				risk_conv = $('#risk-conv').val(),
+				proved_book = $('#proved-book').val();
 
-		// 	if (start == "" || end == "") {
-		// 		drawFlag = false
-		// 	}
-
-		// 	sendRequest('ini_prod/change/', {
-		// 		start: start,
-		// 		end: end,
-		// 		id: id,
-		// 		value: value,
-		// 		table_data_flag: drawFlag
-		// 	}, (response) => {
-		// 		drawFlag && drawDataTable(response)
-		// 	})
-		// })
+			if (lst_hc == "" || flat == "" || lst_prod == "" || dev_cost == "" || wl == "" || operator == "" || royalty == "" || trap == "" || reservoir == "" || seal == "" || timing == "" || commercial == "" || closure == "" || drainage == "" || mean == "" || boe_feet == "" ||  oil_conv == "" || gas_conv == "" || risk_conv == "" || proved_book == "") {
+				alert("please fill in the all inputs.")
+			}
+			navTotalConventional(
+					lst_hc,
+					flat,
+					lst_prod,
+					dev_cost,
+					wl,
+					operator,
+					royalty,
+					trap,
+					reservoir,
+					seal,
+					timing,
+					commercial,
+					closure,
+					drainage,
+					mean,
+					boe_feet,
+					oil_conv,
+					gas_conv,
+					risk_conv,
+					proved_book
+				);
+		})
 
 		window.provedReserve = $('#proved-reserves').DataTable({
 			"scrollX": true,
 			"paging": false,
-			// "info": false,
 			"searching": false,
-			// "fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
-			// 	let api = this.api()
-			// 	api.column(0).footer().innerHTML = "Total";
-			// 	for (let i = 1; window.footerData && i < window.footerData.length; i ++){
-			// 		api.column(i).footer().innerHTML = get2DigitNumber((window.footerData) ? window.footerData[i] : 0)
-			// 	}
-			// }
+			"fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
+				let api = this.api()
+				for (let i = 0; window.footerData && i < window.footerData.length; i ++){
+					api.column(i).footer().innerHTML = (window.footerData) ? window.footerData[i] : 0
+				}
+			}
 		});
+
+		window.totalProved = $("#total-proved").DataTable({
+			"scrollX": true,
+			"paging" : false,
+			"searching" : false,
+			"fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
+				let api = this.api()
+				for (let i = 0; window.otherAssetFooterData && i < window.otherAssetFooterData.length; i ++){
+					api.column(i).footer().innerHTML = (window.otherAssetFooterData) ? window.otherAssetFooterData[i] : 0
+				}
+			}
+		})
 
 		window.addPlayUnconventional = $("#add-play-unconventional").DataTable({
 			"scrollX": true,
@@ -481,7 +645,6 @@ let NavTotal = (() => {
 	}
 })();
 
-((window, $) => {
-		
+((window, $) => {		
 	NavTotal.init();
 })(window, jQuery);

@@ -23,13 +23,8 @@ class DeclineRateAdmin(admin.ModelAdmin):
 	list_display = ('prod', 'ticker', 'decline_rate')
 
 
-class NavProvedResultAdmin(admin.ModelAdmin):
-	list_display = ('ticker', 'pv', 'pv_boe', 'pv_mcfe')
-
-
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(Price, PriceAdmin)
 admin.site.register(Predict, PredictAdmin)
 admin.site.register(DeclineRate, DeclineRateAdmin)
-admin.site.register(NavProvedResult, NavProvedResultAdmin)

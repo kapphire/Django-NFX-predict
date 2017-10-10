@@ -150,3 +150,31 @@ div #add-play-conventional-input {
 #single_cal4 {
   width: 160px;
 }
+
+#shares_out_text {
+  font-size: 13px;
+  font-weight: bold;
+  float: left;
+}
+
+#shares_out {
+  float: left;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+#acquisition-uses-choice{
+  float: right;
+}
+
+#landing-net-change-btn{
+  float: right;
+}
+
+#landing-results-btn{
+  float: right;
+}
+
+#go {
+  margin-left: 35%;
+}

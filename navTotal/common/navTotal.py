@@ -14,6 +14,7 @@ class NavTotalStatic(object):
 		self.days_to = param['days_to']
 		self.drilled = param['drilled']
 		self.total_init_variables = param['total_init_variables']
+		self.shares_out = param['shares_out']
 
 	def preprocess(self):
 		unconv_fst_tbl_dict = {}
@@ -22,7 +23,6 @@ class NavTotalStatic(object):
 		
 		acerage = self.risk_unconv * self.acre_unconv * self.zone * self.zone_pros / 100 / 100
 		wells = (acerage / self.spacing) - self.drilled
-		print((acerage / self.spacing))
 
 		unconv_fst_total = 0
 		for product in self.prods_date:
@@ -39,23 +39,50 @@ class NavTotalStatic(object):
 				unconv_fst_tbl.append(unconv_fst_tbl_dict[prod_id])
 				unconv_fst_total_choice = unconv_fst_tbl_dict[prod_id] / 6
 				unconv_fst_total_choice_other = unconv_fst_tbl_dict[prod_id]
-			if self.total_init_variables.boe_mcfe == 0:
+			if self.total_init_variables.boe_mcfe == 1:
 				unconv_fst_total += unconv_fst_total_choice
 			else:
 				unconv_fst_total += unconv_fst_total_choice_other
 
-		unconv_fst_tbl.append(unconv_fst_total)	
-		gas_per = (unconv_sec_tbl_dict[2] / (unconv_sec_tbl_dict[2] + unconv_sec_tbl_dict[1] * 6)) * 100
-		unconv_fst_tbl.append(gas_per)	
+		unconv_fst_tbl.append(unconv_fst_total)
+		if (unconv_sec_tbl_dict[2] + unconv_sec_tbl_dict[1] * 6) == 0:
+			gas_per = 'No Data'
+		else:
+			gas_per = (unconv_sec_tbl_dict[2] / (unconv_sec_tbl_dict[2] + unconv_sec_tbl_dict[1] * 6)) * 100
+		unconv_fst_tbl.append(gas_per)
+
 		wells_yr = self.rigs * (365 / self.days_to)
 		years_unconv = wells / wells_yr
 
-
-
+		unconv_sec_tbl_dict['total'] = unconv_fst_total
+		unconv_sec_tbl_dict['gas_per'] = gas_per
 		unconv_sec_tbl_dict['acerage'] = acerage
 		unconv_sec_tbl_dict['wells'] = wells
 		unconv_sec_tbl_dict['wells_yr'] = wells_yr
 		unconv_sec_tbl_dict['years_unconv'] = years_unconv
-		unconv_sec_tbl_dict['m_a'] = years_unconv
+		if years_unconv <= self.total_init_variables.duration:
+			unconv_sec_tbl_dict['m_a'] = years_unconv
+		else:
+			unconv_sec_tbl_dict['m_a'] = self.total_init_variables.duration
+		unconv_sec_tbl_dict['well_cost'] = self.well_cost
+		unconv_sec_tbl_dict['well_pv_ten'] = self.play_result.pv_10
+		unconv_sec_tbl_dict['well_pv_eur'] = self.play_result.pv_eur
+		unconv_sec_tbl_dict['irr'] = self.play_result.irr
 
-		return unconv_fst_tbl
+		if self.total_init_variables.rig_case == 1:
+			denominator = years_unconv
+		else:
+			denominator = unconv_sec_tbl_dict['m_a']
+		numerator = (1 + self.total_init_variables.inflation / 100) / (1 + self.total_init_variables.net_asset_summary / 100)
+
+
+		unconv_sec_tbl_dict['boe'] = max(0, unconv_sec_tbl_dict['well_pv_eur'] * (1 - pow(numerator, (denominator - 1)))) / (1 - numerator) / denominator
+		unconv_sec_tbl_dict['mm'] = unconv_sec_tbl_dict['boe'] * unconv_sec_tbl_dict['total']
+		unconv_sec_tbl_dict['share'] = unconv_sec_tbl_dict['mm'] / self.shares_out
+		unconv_sec_tbl_dict['acre'] = unconv_sec_tbl_dict['mm'] / self.acre_unconv * 1000000
+
+		unconv_fst_tbl.append(unconv_sec_tbl_dict['boe'])
+		unconv_fst_tbl.append(unconv_sec_tbl_dict['mm'])
+		unconv_fst_tbl.append(unconv_sec_tbl_dict['share'])
+
+		return {'array' : unconv_fst_tbl, 'dict' : unconv_sec_tbl_dict}

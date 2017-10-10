@@ -53,14 +53,23 @@
                   <option value="0">no</option>
                 </select>
               </td>
-              <td id="total-ngl-percent">
+              <td id="total-ngl-percent">                
+                {% if init_val_dict == None %}
+                {% else %}
+                  {{ init_val_dict.wti }}
+                {% endif %}
                 &nbsp;%
               </td>
               <td>
                 <input type="text" name="total-duration" class="total-variables" id="total-duration" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.duration}}{% endif %}">
                 &nbsp;yrs
               </td>
-              <td></td>
+              <td id="total-r">
+                {% if init_val_dict == None %}
+                {% else %}
+                  {{ init_val_dict.r|customRound }}
+                {% endif %}
+              </td>
               <td>
                 <input type="text" name="total-year-define" class="total-variables" id="total-year-define" value="{% if total_init_variables == None %}{% else %}{{total_init_variables.year}}{% endif %}">
               </td>
@@ -88,7 +97,11 @@
               </td>
             </tr>
           </tbody>
-        </table>        
+        </table>
+        <div class="x_content">
+          <p id="shares_out_text">Shares Out. (MM)&nbsp;:&nbsp;&nbsp;&nbsp;</p>
+          <p id="shares_out">{{ shares_out }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -138,24 +151,36 @@
                               <table class="table table-hover table-bordered" id="add-play-unconventional">
                                 <thead>
                                   <tr>
-                                    {% for prod in prods_date %}
+                                    {% if prods_date == None %}
                                       {% for product in products %}
-                                        {% if product.id == prod.prod_id %}
-                                          <th>{{ product.name }}</th>
-                                        {% endif %}
+                                        <th>{{ product.name }}</th>
                                       {% endfor %}
-                                    {% endfor %}
+                                    {% else %}
+                                      {% for prod in prods_date %}
+                                        {% for product in products %}
+                                          {% if product.id == prod.prod_id %}
+                                            <th>{{ product.name }}</th>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endfor %}
+                                    {% endif %}
                                     <th>Total</th>
                                     <th colspan="4" scope="colgroup">Asset Value</th>
                                   </tr>
                                   <tr>
-                                    {% for prod in prods_date %}
+                                    {% if prods_date == None %}
                                       {% for product in products %}
-                                        {% if product.id == prod.prod_id %}
-                                          <th>{{ product.prod_unit }}</th>
-                                        {% endif %}
+                                        <th>{{ product.prod_unit }}</th>
                                       {% endfor %}
-                                    {% endfor %}
+                                    {% else %}
+                                      {% for prod in prods_date %}
+                                        {% for product in products %}
+                                          {% if product.id == prod.prod_id %}
+                                            <th>{{ product.prod_unit }}</th>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endfor %}
+                                    {% endif %}
                                     <th>MMBoe</th>
                                     <th>%Gas</th>
                                     <th>$/Boe</th>
@@ -163,6 +188,31 @@
                                     <th>$/Share</th>
                                   </tr>
                                 </thead>
+                                <tbody>
+                                  {% if calc_result == None %}
+                                    {% for product in products %}
+                                      <td>{{ product.prod_unit }}</td>
+                                    {% endfor %}
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                  {% else %}
+                                    {% for key, value in calc_result.items %}
+                                      {% for product in products %}
+                                        {% if product.id == key %}
+                                          <td>{{ value|customRound }}</td>
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% endfor %}
+                                    <td>{{ calc_result.total|customRound }}</td>
+                                    <td>{{ calc_result.gas_per|customRound }}</td>
+                                    <td>{{ calc_result.boe|customRound }}</td>
+                                    <td>{{ calc_result.mm|customRound }}</td>
+                                    <td>{{ calc_result.share|customRound }}</td>
+                                  {% endif %}                                  
+                                </tbody>
                               </table>
                             </div>
                             <div class="col-md-7 col-sm-7 col-xs-7">
@@ -186,24 +236,36 @@
                                   </tr>
                                   <tr>
                                     <th>Acres</th>
-                                    {% for prod in prods_date %}
+                                    {% if prods_date == None %}
                                       {% for product in products %}
-                                        {% if product.id == prod.prod_id %}
-                                          <th>{{ product.name }}({{ product.nav_total_unit }})</th>
-                                        {% endif %}
+                                        <th>{{ product.name }}({{ product.nav_total_unit }})</th>
                                       {% endfor %}
-                                    {% endfor %}
+                                    {% else %}
+                                      {% for prod in prods_date %}
+                                        {% for product in products %}
+                                          {% if product.id == prod.prod_id %}
+                                            <th>{{ product.name }}({{ product.nav_total_unit }})</th>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endfor %}
+                                    {% endif %}
                                     <th>Risk</th>
                                     <th>Spacing</th>
                                     <th>$/acre</th>
                                     <th>Acreage</th>
-                                    {% for prod in prods_date %}
+                                    {% if prods_date == None %}
                                       {% for product in products %}
-                                        {% if product.id == prod.prod_id %}
-                                          <th>{{ product.name }}({{ product.prod_unit }})</th>
-                                        {% endif %}
+                                        <th>{{ product.name }}({{ product.prod_unit }})</th>
                                       {% endfor %}
-                                    {% endfor %}
+                                    {% else %}
+                                      {% for prod in prods_date %}
+                                        {% for product in products %}
+                                          {% if product.id == prod.prod_id %}
+                                            <th>{{ product.name }}({{ product.prod_unit }})</th>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endfor %}
+                                    {% endif %}
                                     <th>Wells</th>
                                     <th>($mm)</th>
                                     <th>Zones</th>
@@ -221,30 +283,97 @@
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td><input type="text" name="acre-unconv" class="reserve-potential-inputs" id="acre-unconv"></td>
-                                    {% for prod in prods_date %}                                      
-                                      <td>{{ prod.eur|customRound }} {% if prod.prod_id != 2 %}Mboe/well{% else %}b/well{% endif %}</td>                               
-                                    {% endfor %}
-                                    <td><input type="text" name="risk-unconv" class="reserve-potential-inputs" id="risk-unconv"></td>
-                                    <td><input type="text" name="spacing" class="reserve-potential-inputs" id="spacing"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><input type="text" name="zone" class="reserve-potential-inputs" id="zone"></td>
-                                    <td><input type="text" name="zone-pros" class="reserve-potential-inputs" id="zone-pros"></td>
-                                    <td>${{ play_result.pv_10|customRound }}</td>
-                                    <td>${{ play_result.pv_eur|customRound }}</td>
-                                    <td>{{ play_result.irr|customRound }} %</td>
-                                    <td><input type="text" name="rigs" class="reserve-potential-inputs" id="rigs"></td>
-                                    <td><input type="text" name="days-to" class="reserve-potential-inputs" id="days-to"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><input type="text" name="drilled" class="reserve-potential-inputs" id="drilled"></td>
-                                    <td></td>
+                                    <td><input type="text" name="acre-unconv" class="reserve-potential-inputs" id="acre-unconv" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.acres }}{% endif %}"></td>
+                                    {% if prods_date == None %}
+                                      {% for prod in products %}
+                                        <td>{% if prod.prod_id != 2 %}Mboe/well{% else %}b/well{% endif %}</td>
+                                      {% endfor %}
+                                    {% else %}
+                                      {% for prod in prods_date %}                                      
+                                        <td>{{ prod.eur|customRound }} {% if prod.prod_id != 2 %}Mboe/well{% else %}b/well{% endif %}</td>                               
+                                      {% endfor %}
+                                    {% endif %}
+                                    <td><input type="text" name="risk-unconv" class="reserve-potential-inputs" id="risk-unconv" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.risk }}{% endif %}">&nbsp;%
+                                    </td>
+                                    <td><input type="text" name="spacing" class="reserve-potential-inputs" id="spacing" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.spacing }}{% endif %}">&nbsp;-acre</td>
+                                    <td id="unconventional-acre">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.acre|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td id="unconventional-acreage">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.acerage|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    {% if calc_result == None %}
+                                      {% for product in products %}
+                                        <td data-id='{{product.id}}' class="net_resource"></td>
+                                      {% endfor %}                                    
+                                    {% else %}
+                                      {% for key, value in calc_result.items %}
+                                        {% for product in products %}
+                                          {% if product.id == key %}
+                                            <td data-id='{{product.id}}' class="net_resource">{{ value|customRound }}</td>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endfor %}
+                                    {% endif %}
+                                    <td id="unconventional-wells">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.wells|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td id="unconventional-well-cost">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.well_cost|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td><input type="text" name="zone" class="reserve-potential-inputs" id="zone" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.zones }}{% endif %}"></td>
+                                    <td><input type="text" name="zone-pros" class="reserve-potential-inputs" id="zone-pros" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.zone_pros }}{% endif %}">&nbsp;%</td>
+                                    <td id="unconventional-pv10">
+                                    {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.well_pv_ten|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td id="unconventional-pv-boe">
+                                    {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.well_pv_eur|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td id="unconventional-irr">
+                                    {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.irr|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td><input type="text" name="rigs" class="reserve-potential-inputs" id="rigs" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.rigs }}{% endif %}"></td>
+                                    <td><input type="text" name="days-to" class="reserve-potential-inputs" id="days-to" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.drill }}{% endif %}"></td>
+                                    <td id="unconventional-wells-yr">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.wells_yr|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td id="unconventional-years">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.years_unconv|customRound }}
+                                      {% endif %}
+                                    </td>
+                                    <td><input type="text" name="drilled" class="reserve-potential-inputs" id="drilled" value="{% if total_add_play_unconv == None %}{% else %}{{ total_add_play_unconv.wells }}{% endif %}"></td>
+                                    <td id="unconventional-m-a">
+                                      {% if calc_result == None %}
+                                      {% else %}
+                                        {{ calc_result.m_a|customRound }}
+                                      {% endif %}
+                                    </td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -335,35 +464,112 @@
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td><input type="text" name="lst-hc" class="reserve-potential-inputs" id="lst-hc"></td>
-                                    <td><input type="text" name="flat" class="reserve-potential-inputs" id="flat"></td>
-                                    <td><input type="text" name="lst_prod" class="reserve-potential-inputs" id="lst_prod"></td>
-                                    <td><input type="text" name="dev-cost" class="reserve-potential-inputs" id="dev-cost"></td>
-                                    <td><input type="text" name="wl" class="reserve-potential-inputs" id="wl"></td>
-                                    <td><input type="text" name="operator" class="reserve-potential-inputs" id="operator"></td>
-                                    <td><input type="text" name="royalty" class="reserve-potential-inputs" id="royalty"></td>
-                                    <td><input type="text" name="trap" class="reserve-potential-inputs" id="trap"></td>
-                                    <td><input type="text" name="reservoir" class="reserve-potential-inputs" id="reservoir"></td>
-                                    <td><input type="text" name="seal" class="reserve-potential-inputs" id="seal"></td>
-                                    <td><input type="text" name="timing" class="reserve-potential-inputs" id="timing"></td>
-                                    <td><input type="text" name="commercial" class="reserve-potential-inputs" id="commercial"></td>
-                                    <td></td>
-                                    <td><input type="text" name="closure" class="reserve-potential-inputs" id="closure"></td>
-                                    <td><input type="text" name="drainage" class="reserve-potential-inputs" id="drainage"></td>
-                                    <td><input type="text" name="mean" class="reserve-potential-inputs" id="mean"></td>
-                                    <td></td>
-                                    <td><input type="text" name="boe-feet" class="reserve-potential-inputs" id="boe-feet"></td>
-                                    <td></td>
-                                    <td><input type="text" name="days-to" class="reserve-potential-inputs" id="days-to"></td>
-                                    <td><input type="text" name="oil-conv" class="reserve-potential-inputs" id="oil-conv"></td>
-                                    <td><input type="text" name="gas-conv" class="reserve-potential-inputs" id="gas-conv"></td>
-                                    <td></td>
-                                    <td><input type="text" name="risk_conv" class="reserve-potential-inputs" id="risk_conv"></td>
-                                    <td><input type="text" name="proved-book" class="reserve-potential-inputs" id="proved-book"></td>
+                                    <td>
+                                      <input type="text" name="lst-hc" class="reserve-potential-inputs" id="lst-hc" value="{% if conv_variables == None %}{% else %}{{conv_variables.lst_hc}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="flat" class="reserve-potential-inputs" id="flat" value="{% if conv_variables == None %}{% else %}{{conv_variables.flat}}{% endif %}">
+                                      &nbsp;years
+                                    </td>
+                                    <td>
+                                      <input type="text" name="lst-prod" class="reserve-potential-inputs" id="lst-prod" value="{% if conv_variables == None %}{% else %}{{conv_variables.lst_prod}}{% endif %}">
+                                    </td>
+                                    <td>&nbsp;$
+                                      <input type="text" name="dev-cost" class="reserve-potential-inputs" id="dev-cost" value="{% if conv_variables == None %}{% else %}{{conv_variables.dev_cost}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="wl" class="reserve-potential-inputs" id="wl" value="{% if conv_variables == None %}{% else %}{{conv_variables.wl}}{% endif %}">
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <input type="text" name="operator" class="reserve-potential-inputs" id="operator" value="{% if conv_variables == None %}{% else %}{{conv_variables.operator}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="royalty" class="reserve-potential-inputs" id="royalty" value="{% if conv_variables == None %}{% else %}{{conv_variables.royalty}}{% endif %}">
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <input type="text" name="trap" class="reserve-potential-inputs" id="trap" value="{% if conv_variables == None %}{% else %}{{conv_variables.trap}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="reservoir" class="reserve-potential-inputs" id="reservoir" value="{% if conv_variables == None %}{% else %}{{conv_variables.reservoir}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="seal" class="reserve-potential-inputs" id="seal" value="{% if conv_variables == None %}{% else %}{{conv_variables.seal}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="timing" class="reserve-potential-inputs" id="timing" value="{% if conv_variables == None %}{% else %}{{conv_variables.timing}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="commercial" class="reserve-potential-inputs" id="commercial" value="{% if conv_variables == None %}{% else %}{{conv_variables.commercial}}{% endif %}">
+                                    </td>
+                                    <td id="ps-conv">
+                                      {% if conv_dict == None %}
+                                      {% else %}
+                                        {{conv_dict.ps}}
+                                      {% endif %}
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <input type="text" name="closure" class="reserve-potential-inputs" id="closure" value="{% if conv_variables == None %}{% else %}{{conv_variables.closure}}{% endif %}">
+                                      &nbsp;-way
+                                    </td>
+                                    <td>
+                                      <input type="text" name="drainage" class="reserve-potential-inputs" id="drainage" value="{% if conv_variables == None %}{% else %}{{conv_variables.drainage}}{% endif %}">
+                                    </td>
+                                    <td>
+                                      <input type="text" name="mean" class="reserve-potential-inputs" id="mean" value="{% if conv_variables == None %}{% else %}{{conv_variables.mean}}{% endif %}">
+                                    </td>
+                                    <td id="acre-feet">
+                                      {% if conv_dict == None %}
+                                      {% else %}
+                                        {{conv_dict.acre_feet}}
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      <input type="text" name="boe-feet" class="reserve-potential-inputs" id="boe-feet" value="{% if conv_variables == None %}{% else %}{{conv_variables.boe_feet}}{% endif %}">
+                                    </td>
+                                    <td id="gross">
+                                      {% if conv_dict == None %}
+                                      {% else %}
+                                        {{conv_dict.gross}}
+                                      {% endif %}
+                                    </td>
+                                    <td id="days-to-conv">
+                                      {% if conv_dict == None %}
+                                      {% else %}
+                                        {{conv_dict.expected}}
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      <input type="text" name="oil-conv" class="reserve-potential-inputs" id="oil-conv" value="{% if conv_variables == None %}{% else %}{{conv_variables.oil_conv}}{% endif %}">
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <input type="text" name="gas-conv" class="reserve-potential-inputs" id="gas-conv" value="{% if conv_variables == None %}{% else %}{{conv_variables.gas_conv}}{% endif %}">
+                                      &nbsp;%
+                                    </td>
+                                    <td id="ngl-conv">
+                                      {% if conv_dict == None %}
+                                      {% else %}
+                                        {{conv_dict.expected}}
+                                      {% endif %}
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <input type="text" name="risk-conv" class="reserve-potential-inputs" id="risk-conv" value="{% if conv_variables == None %}{% else %}{{conv_variables.risk_conv}}{% endif %}">
+                                      &nbsp;%
+                                    </td>
+                                    <td>
+                                      <select id="proved-book">
+                                        <option value="1" {% if conv_variables != None %}{% if conv_variables.proved_book == 1 %}selected{% endif %}{% endif %}>yes</option>
+                                        <option value="0" {% if conv_variables != None %}{% if conv_variables.proved_book == 0 %}selected{% endif %}{% endif %}>no</option>
+                                      </select>
+                                    </td>
                                   </tr>
                                 </tbody>
                               </table>
-                              <button type="button" class="btn btn-info reserve-potential">View</button>
+                              <button type="button" class="btn btn-info" id="conventional-view">View</button>
                             </div>
                           </div>
                         </div>
@@ -468,7 +674,7 @@
                               </tr>
                               <tr>
                                 <td></td>                                
-                                <td></td>
+                                <td>&nbsp;</td>
                                 <td></td>             
                               </tr>
                               <tr>
@@ -498,7 +704,7 @@
                               </tr>
                               <tr>
                                 <td></td>                                
-                                <td></td>
+                                <td>&nbsp;</td>
                                 <td></td>             
                               </tr>
                               <tr>
@@ -583,6 +789,12 @@
                                       $&nbsp;{{ asset_acqu_result.cash|customRound }}
                                     {% endif %}
                                   </td>
+                                </tr>
+                                <tr>
+                                  <td></td>
+                                  <td>&nbsp;</td>
+                                  <td></td>
+                                  <td></td>
                                 </tr>
                                 <tr>
                                   <th>Total</th>
@@ -777,7 +989,7 @@
                                 <tr>
                                   <td></td>
                                   <td></td>
-                                  <td></td>
+                                  <td>&nbsp;</td>
                                   <td></td>
                                   <td></td>
                                 </tr>
@@ -1019,7 +1231,7 @@
                                 <tr>
                                   <td></td>
                                   <td></td>
-                                  <td></td>
+                                  <td>&nbsp;</td>
                                   <td></td>
                                   <td></td>
                                 </tr>
@@ -1066,6 +1278,10 @@
                                   </td>
                                 </tr>
                                 <tr>
+                                  <td></td>
+                                  <td>&nbsp;</td>
+                                </tr>
+                                <tr>
                                   <th>Total</th>
                                   <th id="sale-uses-cash-total">$&nbsp;
                                     {% if asset_sale_variables == None %}
@@ -1095,7 +1311,7 @@
     </div>
   </div>
   <div class="docs-data" class="col-sm-12">
-    <div class="col-sm-4 col-md-4 col-lg-4">      
+    <div class="col-sm-6 col-md-6 col-lg-6">      
       <table class="table x_content">
         <thead>
           <tr>
@@ -1108,32 +1324,68 @@
         <tbody>
           <tr>
             <td>Asset Sale Proceeds</td>
-            <td>$600</td>
-            <td>100.0%</td>
-            <td>$600</td>
+            <td id="sale-proceeds-mm">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.sale_proceeds_p }}
+              {% endif %}
+            </td>
+            <td>
+              <input type="text" class="inputs-style" name="sale-proceeds-s" id="sale-proceeds-s" value="{% if net_landing_change_variables == None %}{% else %}{{ net_landing_change_variables.sale_proceeds_s }}{% endif %}">&nbsp;%
+            </td>
+            <td id="sale-proceeds-xp">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.sale_proceeds_xp }}
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <td>Asset Sale Carries</td>
-            <td></td>
-            <td>0%</td>
-            <td>$0</td>
+            <td id="sale-carries-mm"></td>
+            <td>
+              <input type="text" class="inputs-style" name="sale-carries-s" id="sale-carries-s" value="{% if net_landing_change_variables == None %}{% else %}{{ net_landing_change_variables.sale_carries_s }}{% endif %}">&nbsp;%
+            </td>
+            <td id="sale-carries-xp">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.sale_carries_xp }}
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <td>Equity Proceeds</td>
-            <td>$1159</td>
-            <td>100.0%</td>
-            <td>$1159</td>
+            <td id="equity-mm">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.equity_p }}
+              {% endif %}
+            </td>
+            <td>
+              <input type="text" class="inputs-style" name="equity-s" id="equity-s" value="{% if net_landing_change_variables == None %}{% else %}{{ net_landing_change_variables.equity_s }}{% endif %}">&nbsp;%
+            </td>
+            <td id="equity-xp">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.equity_xp }}
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <td>Net S&U</td>
             <td></td>
             <td></td>
-            <td>$1759</td>
+            <td id="sale-net">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.sale_net }}
+              {% endif %}
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="col-sm-4 col-md-4 col-lg-4 col-sm-offset-1">      
+    <div class="col-sm-6 col-md-6 col-lg-6">      
       <table class="table x_content">
         <thead>
           <tr>
@@ -1146,72 +1398,274 @@
         <tbody>
           <tr>
             <td>Asset Purchase Monies</td>
-            <td>$600</td>
-            <td>100.0%</td>
-            <td>$600</td>
+            <td id="monies-mm">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.monies_p }}
+              {% endif %}
+            </td>
+            <td>
+              <input type="text" class="inputs-style" name="monies-s" id="monies-s" value="{% if net_landing_change_variables == None %}{% else %}{{ net_landing_change_variables.monies_s }}{% endif %}">&nbsp;%
+            </td>
+            <td id="monies-xp">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.monies_xp }}
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <td>Asset Purchase Carries</td>
-            <td></td>
-            <td>0%</td>
-            <td>$0</td>
+            <td id="carries-mm"></td>
+            <td>
+              <input type="text" class="inputs-style" name="carries-s" id="carries-s" value="{% if net_landing_change_variables == None %}{% else %}{{ net_landing_change_variables.carries_s }}{% endif %}">&nbsp;%
+            </td>
+            <td id="carries-xp">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.carries_xp }}
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td></td>
-            <td>$600</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>&nbsp;</td>
+            <td id="purchase-net">$&nbsp;
+              {% if net_landing == None %}
+              {% else %}
+                {{ net_landing.purchase_net }}
+              {% endif %}
+            </td>
           </tr>
         </tbody>
-      </table>
+      </table>      
     </div>
+    <button class="btn btn-info btn-sm" id="landing-net-change-btn">Change P(s)</button>
+    {% csrf_token %} 
   </div>  
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="col-md-8">
+        <div class="x_content">
+          <div class="x_title">
+            <h4>Proved Reserves</h4>
+          </div>
+          <div class="x_content">
+            <table class="table table-hover data-tables" id="proved-reserves">
+              <thead>
+                <tr>
+                  <th rowspan="2">Oil & Gas Properties</th>
+                  <th rowspan="2">Sold</th>
+                  {% for product in products %}
+                    <th>{{ product.name }}</th>
+                  {% endfor %}
+                  <th>Total</th>
+                  <th colspan="4" scope="colgroup">Asset Value</th>
+                </tr>
+                <tr>
+                  {% for product in products %}
+                    <th>{{ product.prod_unit }}</th>
+                  {% endfor %}
+                  <th>MMBoe</th>
+                  <th>%Gas</th>
+                  <th>$/Boe</th>
+                  <th>$MM</th>
+                  <th>$/Share</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% if proved_reserves != None %}
+                <td>United States</td>
+                <td></td>
+                {% for product in products %}
+                  {% for key, value in proved_reserves.items %}
+                    {% if product.id == key %}
+                      <td>{{ value|customRound }}</td>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}              
+                <td>{{proved_reserves.total|customRound}}</td>
+                <td>{{proved_reserves.percent|customRound}}</td>
+                <td>{{proved_reserves.asset_value|customRound}}</td>
+                <td>{{proved_reserves.mm|customRound}}</td>
+                <td>{{proved_reserves.share|customRound}}</td>
+              {% endif %}
+              </tbody>
+              <tfoot>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tfoot>
+            </table>
+          </div>  
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-4">
       <div class="x_content">
         <div class="x_title">
-          <h4>Proved Reserves</h4>
+          <h4>Other Assets</h4>
         </div>
         <div class="x_content">
-          <table class="table table-hover data-tables" id="proved-reserves">
+          <table class="table table-hover data-tables" id="total-proved">
             <thead>
               <tr>
-                <th rowspan="2">Oil & Gas Properties</th>
-                <th rowspan="2">Sold</th>
-                {% for product in products %}
-                  <th>{{ product.name }}</th>
-                {% endfor %}
-                <th>Total</th>
-                <th colspan="4" scope="colgroup">Asset Value</th>
+                <th></th>
+                <th></th>
+                <th>&nbsp;</th>
               </tr>
               <tr>
-                {% for product in products %}
-                  <th>{{ product.prod_unit }}</th>
-                {% endfor %}
-                <th>MMBoe</th>
-                <th>%Gas</th>
-                <th>$/Boe</th>
+                <th></th>
                 <th>$MM</th>
                 <th>$/Share</th>
               </tr>
             </thead>
             <tbody>
-              <td>United States</td>
-              <td></td>
-              <td>186</td>
-              <td>95</td>
-              <td>1363</td>
-              <td>413</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+            {% if other_asset != None%}
+              <td>{{ other_asset.name }}</td>          
+              <td>{{ other_asset.mm }}</td>
+              <td>{{ other_asset.share }}</td>
+            {% endif %}
             </tbody>
+            <tfoot>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tfoot>
           </table>
         </div>
       </div>
     </div>
+    </div>
   </div>
   <br />
-</div>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="col-md-7">
+        <div class="x_content">
+          <div class="x_title">
+            <h4>Liabilities</h4>
+          </div>
+          <div class="x_content">
+            <table class="table table-hover data-tables" id="proved-reserves">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>$MM</th>
+                  <th>$/Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Long-Term Debt</td>
+                  <td>$&nbsp;
+                    <input type="text" name="landing-debt" class="inputs-style" id="landing-debt" value="{% if landing_results_variables == None %}{% else %}{{ landing_results_variables.debt }}{% endif %}">
+                  </td>
+                  <td id="share-debt">
+                    {% if landing_results != None %}
+                      {{ landing_results.debt|customRound }}
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Cash & Equivalents</td>
+                  <td>$&nbsp;
+                    <input type="text" name="landing-equivalents" class="inputs-style" id="landing-equivalents" value="{% if landing_results_variables == None %}{% else %}{{ landing_results_variables.equivalents }}{% endif %}">
+                  </td>
+                  <td id="share-equivalents">
+                    {% if landing_results != None %}
+                      {{ landing_results.equivalents|customRound }}
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Rolling 1-yr forward FCF / Deficit</td>
+                  <td>$&nbsp;
+                    <input type="text" name="landing-deficit" class="inputs-style" id="landing-deficit" value="{% if landing_results_variables == None %}{% else %}{{ landing_results_variables.deficit }}{% endif %}">
+                  </td>
+                  <td id="share-deficit">
+                    {% if landing_results != None %}
+                      {{ landing_results.deficit|customRound }}
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td>PV Hedges</td>
+                  <td>$&nbsp;
+                    <input type="text" name="landing-hedge" class="inputs-style" id="landing-hedge" disabled value='0.0'>   <!--    ================== Should be updated ===================     -->
+                  </td>
+                  <td id="share-hedge">
+                    {% if landing_results != None %}
+                      {{ landing_results.hedge|customRound }}
+                    {% endif %}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="btn btn-info btn-sm" id="landing-results-btn">View Results</button>
+            {% csrf_token %} 
+          </div>  
+        </div>
+      </div>
+      <div class="col-md-5 col-sm-5 col-xs-5">
+        <div class="x_content">
+          <div class="x_title">
+            <h4>Total Liabilities&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proven Net Asset Value</h4>
+          </div>
+          <div class="x_content">
+            <table class="table table-hover data-tables" id="total-proved">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>$MM</th>
+                  <th>$/Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Total Liabilities</th>
+                  <th id="total-mm-liabilities">
+                    {% if landing_results != None %}
+                      {{ landing_results.total_mm_liabilities|customRound }}
+                    {% endif %}
+                  </th>
+                  <th id="total-share-liabilities">
+                    {% if landing_results != None %}
+                      {{ landing_results.total_share_liabilities|customRound }}
+                    {% endif %}
+                  </th>
+                </tr>
+                <tr>
+                  <th>Proven Net Asset Value</th>
+                  <th id="proven-net-mm">
+                    {% if landing_results != None %}
+                      {{ landing_results.proven_net_mm|customRound }}
+                    {% endif %}
+                  </th>
+                  <th id="proven-net-share">
+                    {% if landing_results != None %}
+                      {{ landing_results.proven_net_share|customRound }}
+                    {% endif %}
+                  </th>
+                </tr> 
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
