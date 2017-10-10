@@ -13,7 +13,7 @@ class ProvedReserves(object):
 		ordered = {}
 		for individual in self.nav_proved:
 			if individual.name in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']:
-				proved_reserves_dict[int(individual.name)] = individual.value
+				proved_reserves_dict[str(individual.name)] = individual.value
 				ordered = collections.OrderedDict(sorted(proved_reserves_dict.items()))
 			if individual.name == 'pv':
 				pv = individual.value
@@ -22,13 +22,13 @@ class ProvedReserves(object):
 			proved_reserves_arr.append(round(value, 1))
 
 		if self.total_init_variables.boe_mcfe == 0:
-			total = proved_reserves_dict[1] + proved_reserves_dict[2] * 6
+			total = proved_reserves_dict['1'] + proved_reserves_dict['2'] * 6
 		else:
-			total = proved_reserves_dict[1] + proved_reserves_dict[2] / 6
-		if (proved_reserves_dict[1] + proved_reserves_dict[2] * 6) == 0:
+			total = proved_reserves_dict['1'] + proved_reserves_dict['2'] / 6
+		if (proved_reserves_dict['1'] + proved_reserves_dict['2'] * 6) == 0:
 			percent = 'No Data'
 		else:
-			percent = proved_reserves_dict[2] / (proved_reserves_dict[2] + proved_reserves_dict[1] * 6)
+			percent = proved_reserves_dict['2'] / (proved_reserves_dict['2'] + proved_reserves_dict[1] * 6)
 		if total == 0:
 			asset_value = 'No Data'
 		else:
