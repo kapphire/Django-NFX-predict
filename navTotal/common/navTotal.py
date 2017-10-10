@@ -84,7 +84,7 @@ class NavTotalStatic(object):
 			denominator = unconv_sec_tbl_dict['m_a']
 		numerator = (1 + self.total_init_variables.inflation / 100) / (1 + self.total_init_variables.net_asset_summary / 100)
 
-		if numerator == 0:
+		if denominator == 0:
 			unconv_sec_tbl_dict['boe'] = 0
 		else:
 			unconv_sec_tbl_dict['boe'] = max(0, unconv_sec_tbl_dict['well_pv_eur'] * (1 - pow(numerator, (denominator - 1)))) / (1 - numerator) / denominator
