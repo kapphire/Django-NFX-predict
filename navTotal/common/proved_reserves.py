@@ -10,7 +10,7 @@ class ProvedReserves(object):
 	def get_proved_reserves(self):
 		proved_reserves_arr = ['United States', '']  # ======= Should be updated ===========
 		proved_reserves_dict = {}
-		ordered = 0
+		ordered = {}
 		for individual in self.nav_proved:
 			if individual.name in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']:
 				proved_reserves_dict[int(individual.name)] = individual.value
@@ -18,7 +18,7 @@ class ProvedReserves(object):
 			if individual.name == 'pv':
 				pv = individual.value
 
-		for key, value in ordered.iteritems():
+		for key, value in ordered.items():
 			proved_reserves_arr.append(round(value, 1))
 
 		if self.total_init_variables.boe_mcfe == 0:
