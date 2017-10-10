@@ -58,7 +58,7 @@ class NavTotalStatic(object):
 			wells_yr = 0
 		else:
 			wells_yr = self.rigs * (365 / self.days_to)
-		if wells_yr = 0:
+		if wells_yr == 0:
 			years_unconv = 0
 		else:
 			years_unconv = wells / wells_yr
