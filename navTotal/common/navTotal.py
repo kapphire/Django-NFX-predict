@@ -84,8 +84,10 @@ class NavTotalStatic(object):
 			denominator = unconv_sec_tbl_dict['m_a']
 		numerator = (1 + self.total_init_variables.inflation / 100) / (1 + self.total_init_variables.net_asset_summary / 100)
 
-
-		unconv_sec_tbl_dict['boe'] = max(0, unconv_sec_tbl_dict['well_pv_eur'] * (1 - pow(numerator, (denominator - 1)))) / (1 - numerator) / denominator
+		if numerator == 0:
+			unconv_sec_tbl_dict['boe'] = 0
+		else:
+			unconv_sec_tbl_dict['boe'] = max(0, unconv_sec_tbl_dict['well_pv_eur'] * (1 - pow(numerator, (denominator - 1)))) / (1 - numerator) / denominator
 		unconv_sec_tbl_dict['mm'] = unconv_sec_tbl_dict['boe'] * unconv_sec_tbl_dict['total']
 		unconv_sec_tbl_dict['share'] = unconv_sec_tbl_dict['mm'] / self.shares_out
 		unconv_sec_tbl_dict['acre'] = unconv_sec_tbl_dict['mm'] / self.acre_unconv * 1000000
