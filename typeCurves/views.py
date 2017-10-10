@@ -100,7 +100,7 @@ def typeCurveAjax(request):
 		npv = irr_npv_pv['npv']
 		pv = irr_npv_pv['pv_eur']
 
-		playResult = PlayResult.objects.filter(ticker_id = ticker_id, play_id = play_id).get()
+		playResult = PlayResult.objects.filter(ticker_id = ticker_id, play_id = play_id).all()
 
 		if playResult is None:
 				insert_result = PlayResult(irr = irr, pv_10 = npv, pv_eur = pv)
