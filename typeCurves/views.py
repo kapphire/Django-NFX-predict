@@ -79,7 +79,6 @@ def typeCurveAjax(request):
 		typeCurveAjax = TypeCurveStatic({
 				'years' : years,
 				'ticker_id' : ticker_id,
-				'ticker' : ticker,
 				'products' : products,
 				'prices' : prices,
 				'play_names' : play_names,
