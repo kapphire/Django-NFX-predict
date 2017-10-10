@@ -9,7 +9,7 @@ class ProvedReserves(object):
 
 	def get_proved_reserves(self):
 		proved_reserves_arr = ['United States', '']  # ======= Should be updated ===========
-		proved_reserves_dict = dict
+		proved_reserves_dict = dict()
 		ordered = {}
 		for individual in self.nav_proved:
 			if individual.name in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']:
