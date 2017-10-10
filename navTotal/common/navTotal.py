@@ -54,7 +54,10 @@ class NavTotalStatic(object):
 			gas_per = (unconv_sec_tbl_dict[2] / (unconv_sec_tbl_dict[2] + unconv_sec_tbl_dict[1] * 6)) * 100
 		unconv_fst_tbl.append(gas_per)
 
-		wells_yr = self.rigs * (365 / self.days_to)
+		if self.days_to == 0:
+			wells_yr = 0
+		else:
+			wells_yr = self.rigs * (365 / self.days_to)
 		years_unconv = wells / wells_yr
 
 		unconv_sec_tbl_dict['total'] = unconv_fst_total
