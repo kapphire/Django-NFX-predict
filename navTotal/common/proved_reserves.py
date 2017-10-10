@@ -18,7 +18,7 @@ class ProvedReserves(object):
 			if individual.name == 'pv':
 				pv = individual.value
 
-		for key, value in ordered.iteritems():
+		for key, value in ordered.items():
 			proved_reserves_arr.append(round(value, 1))
 
 		if self.total_init_variables.boe_mcfe == 0:
