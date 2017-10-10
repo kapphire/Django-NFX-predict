@@ -174,7 +174,6 @@ let NavTotal = (() => {
 			'monies_s' : monies_s,
 			'carries_s' : carries_s,
 		}, (response) => {
-			console.log(response.net_landing)
 			$('#sale-proceeds-mm').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_proceeds_p))
 			$('#sale-proceeds-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_proceeds_xp))
 			$('#sale-carries-xp').html('$&nbsp;' + get2DigitNumber(response.net_landing.sale_carries_xp))
