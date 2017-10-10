@@ -67,7 +67,7 @@
               <td id="total-r">
                 {% if init_val_dict == None %}
                 {% else %}
-                  {{ init_val_dict.r|customRound }}
+                 {{ init_val_dict.r|customRound }}
                 {% endif %}
               </td>
               <td>
@@ -1358,7 +1358,7 @@
             <td id="equity-mm">$&nbsp;
               {% if net_landing == None %}
               {% else %}
-                {{ net_landing.equity_p }}
+                {{ net_landing.equity_p|customRound }}
               {% endif %}
             </td>
             <td>
@@ -1367,7 +1367,7 @@
             <td id="equity-xp">$&nbsp;
               {% if net_landing == None %}
               {% else %}
-                {{ net_landing.equity_xp }}
+                {{ net_landing.equity_xp|customRound }}
               {% endif %}
             </td>
           </tr>
@@ -1378,7 +1378,7 @@
             <td id="sale-net">$&nbsp;
               {% if net_landing == None %}
               {% else %}
-                {{ net_landing.sale_net }}
+                {{ net_landing.sale_net|customRound }}
               {% endif %}
             </td>
           </tr>

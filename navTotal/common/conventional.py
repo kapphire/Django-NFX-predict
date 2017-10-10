@@ -49,7 +49,7 @@ class Conventional(object):
 			conventional_dict['per_gas'] = conventional_dict['gas_data'] / (conventional_dict['gas_data'] + conventional_dict['oil_data'] * 6) * 100
 		conventional_dict['asset_value'] = 10.39 # =================== Should be updated =====================
 		conventional_dict['mm'] = max(0, conventional_dict['asset_value'] * conventional_dict['total']) * (1 - conventional_dict['proved_book'])
-		conventional_dict['share'] = conventional_dict['mm'] / self.shares_out
+		conventional_dict['share'] = round(conventional_dict['mm'] / self.shares_out, 1)
 
 		conventional_arr.append(conventional_dict['oil_data'])
 		conventional_arr.append(conventional_dict['gas_data'])
