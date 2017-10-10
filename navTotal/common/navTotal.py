@@ -90,7 +90,10 @@ class NavTotalStatic(object):
 			unconv_sec_tbl_dict['boe'] = max(0, unconv_sec_tbl_dict['well_pv_eur'] * (1 - pow(numerator, (denominator - 1)))) / (1 - numerator) / denominator
 		unconv_sec_tbl_dict['mm'] = unconv_sec_tbl_dict['boe'] * unconv_sec_tbl_dict['total']
 		unconv_sec_tbl_dict['share'] = unconv_sec_tbl_dict['mm'] / self.shares_out
-		unconv_sec_tbl_dict['acre'] = unconv_sec_tbl_dict['mm'] / self.acre_unconv * 1000000
+		if self.acre_unconv == 0:
+			unconv_sec_tbl_dict['acre'] = 0
+		else:
+			unconv_sec_tbl_dict['acre'] = unconv_sec_tbl_dict['mm'] / self.acre_unconv * 1000000
 
 		unconv_fst_tbl.append(unconv_sec_tbl_dict['boe'])
 		unconv_fst_tbl.append(unconv_sec_tbl_dict['mm'])
