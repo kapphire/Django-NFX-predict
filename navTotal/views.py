@@ -284,9 +284,6 @@ def navTotal(request):
 
 		asset_acqu_result = asset_acquisition_obj.preprocess()
 
-	# ==================================== Shares Out ====================================================
-	shares_out = sharesOut(play_id = play_id, ticker_id = ticker_id)
-
 	# ==================================== Asset Sale ====================================================
 	asset_sale_result = TotalAssetSale.objects.filter(play_id = play_id, ticker_id = ticker_id).all()
 	if not asset_sale_result:
@@ -361,6 +358,9 @@ def navTotal(request):
 			net_landing_change_variables = element
 
 		net_landing = netLanding(play_id = play_id, ticker_id = ticker_id)
+
+	# ==================================== Shares Out ====================================================
+	shares_out = sharesOut(play_id = play_id, ticker_id = ticker_id)
 
 	# =================================== Landing Proved Reserves ==========================================
 	result = provedReserves(ticker_id = ticker_id, play_id = play_id)
