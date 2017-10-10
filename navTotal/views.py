@@ -455,7 +455,6 @@ def navTotal(request):
 				drainage = 0,
 				mean = 0,
 				boe_feet = 0,
-				days_to = 0,
 				oil_conv = 0,
 				gas_conv = 0,
 				risk_conv = 0,
