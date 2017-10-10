@@ -22,7 +22,10 @@ class NavTotalStatic(object):
 		unconv_sec_tbl_dict = {}
 		
 		acerage = self.risk_unconv * self.acre_unconv * self.zone * self.zone_pros / 100 / 100
-		wells = (acerage / self.spacing) - self.drilled
+		if self.spacing == 0:
+			wells = 0
+		else:
+			wells = (acerage / self.spacing) - self.drilled
 
 		unconv_fst_total = 0
 		for product in self.prods_date:
