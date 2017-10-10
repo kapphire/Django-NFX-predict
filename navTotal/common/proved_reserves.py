@@ -22,7 +22,7 @@ class ProvedReserves(object):
 			proved_reserves_arr.append(round(value, 1))
 
 		if self.total_init_variables.boe_mcfe == 0:
-			total = proved_reserves_dict[1] + proved_reserves_dict[2] * 6
+			total = proved_reserves_dict['1'] + proved_reserves_dict['2'] * 6
 		else:
 			total = proved_reserves_dict[1] + proved_reserves_dict[2] / 6
 		if (proved_reserves_dict[1] + proved_reserves_dict[2] * 6) == 0:
