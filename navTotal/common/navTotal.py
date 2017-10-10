@@ -58,7 +58,10 @@ class NavTotalStatic(object):
 			wells_yr = 0
 		else:
 			wells_yr = self.rigs * (365 / self.days_to)
-		years_unconv = wells / wells_yr
+		if wells_yr = 0:
+			years_unconv = 0
+		else:
+			years_unconv = wells / wells_yr
 
 		unconv_sec_tbl_dict['total'] = unconv_fst_total
 		unconv_sec_tbl_dict['gas_per'] = gas_per
